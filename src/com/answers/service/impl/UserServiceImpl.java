@@ -17,7 +17,7 @@ public class UserServiceImpl implements IUserService{
 	@Override
 	public int AddUserService(User user) {
 		//先查询是否有该用户
-		int count = userDao.queryUserByUserId(user);
+		int count = userDao.queryUserByUserId(user.getUserId());
 		int flag = -1;
 		if(count == 1) {  		//有该用户
 			flag = 0;
@@ -27,5 +27,25 @@ public class UserServiceImpl implements IUserService{
 		
 		return flag;
 	}
+
+
+	
+	//用户登录
+	@Override
+	public User login(String userId, String passWd) {
+		
+		return userDao.queryUserByIdAndPwd(userId, passWd);
+	}
+
+	
+	//根据账号查询用户是否存在
+	@Override
+	public int queryUserById(String userId) {
+		
+		return userDao.queryUserByUserId(userId);
+	}
+	
+	
+	
 
 }
