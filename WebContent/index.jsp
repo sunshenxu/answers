@@ -62,8 +62,10 @@
 			</div>
 		</div>
 	</section>
+	
 	<section id="main">
 		<section id="content">
+		
 			<div id="headlist">
 				<div id="menu">
 					<a href="#" class="menu-item">技术问答</a> <a href="#">面试题</a> <a
@@ -74,133 +76,9 @@
 						href="#">热门</a>
 				</div>
 			</div>
-			<section class="box">
-				<div class="box-f1">
-					<ul>
-						<li>0 <span>投票</span>
-						</li>
-						<li style="border: 1px solid #4eaa4c; color: #4eaa4c;">0 <span>回答</span>
-						</li>
-						<li>0 <span>浏览</span>
-						</li>
-					</ul>
-				</div>
-				<div class="box-f2">
-					<div class="question_title">
-						<a href="#">这是第一个问题的标题</a>
-					</div>
-					<div class="question_content">
-						问题内容的一部分问题内容的一部分问题内容的一部分问题内容的一部分问题内容的一部分问题内容的一部分问题内容的一部分问题内容的一部分</div>
-					<div class="question_time">
-						<span> 发布人：发布时间 </span> <span class="tag">标签1</span> <span
-							class="tag">标签2</span>
-					</div>
-				</div>
-				<div class="box-f3">
-					<img src="img/header2.jpg" />
-				</div>
-			</section>
-			<section class="box">
-				<div class="box-f1">
-					<ul>
-						<li>0 <span>投票</span>
-						</li>
-						<li style="border: 1px solid #4eaa4c; color: #4eaa4c;">0 <span>回答</span>
-						</li>
-						<li>0 <span>浏览</span>
-						</li>
-					</ul>
-				</div>
-				<div class="box-f2">
-					<div class="question_title">
-						<a href="#">这是第一个问题的标题</a>
-					</div>
-					<div class="question_content">问题内容的一部分</div>
-					<div class="question_time">
-						<span> 发布人：发布时间 </span> <span class="tag">标签1</span> <span
-							class="tag">标签2</span>
-					</div>
-				</div>
-				<div class="box-f3">
-					<img src="img/header2.png" />
-				</div>
-			</section>
-			<section class="box">
-				<div class="box-f1">
-					<ul>
-						<li>0 <span>投票</span>
-						</li>
-						<li style="border: 1px solid #4eaa4c; color: #4eaa4c;">0 <span>回答</span>
-						</li>
-						<li>0 <span>浏览</span>
-						</li>
-					</ul>
-				</div>
-				<div class="box-f2">
-					<div class="question_title">
-						<a href="#">这是第一个问题的标题</a>
-					</div>
-					<div class="question_content">问题内容的一部分</div>
-					<div class="question_time">
-						<span> 发布人：发布时间 </span> <span class="tag">标签1</span> <span
-							class="tag">标签2</span>
-					</div>
-				</div>
-				<div class="box-f3">
-					<img src="img/header2.png" />
-				</div>
-			</section>
-			<section class="box">
-				<div class="box-f1">
-					<ul>
-						<li>0 <span>投票</span>
-						</li>
-						<li style="border: 1px solid #4eaa4c; color: #4eaa4c;">0 <span>回答</span>
-						</li>
-						<li>0 <span>浏览</span>
-						</li>
-					</ul>
-				</div>
-				<div class="box-f2">
-					<div class="question_title">
-						<a href="#">这是第一个问题的标题</a>
-					</div>
-					<div class="question_content">问题内容的一部分</div>
-					<div class="question_time">
-						<span> 发布人：发布时间 </span> <span class="tag">标签1</span> <span
-							class="tag">标签2</span>
-					</div>
-				</div>
-				<div class="box-f3">
-					<img src="img/header2.png" />
-				</div>
-			</section>
-			<section class="box">
-				<div class="box-f1">
-					<ul>
-						<li>0 <span>投票</span>
-						</li>
-						<li style="border: 1px solid #4eaa4c; color: #4eaa4c;">0 <span>回答</span>
-						</li>
-						<li>0 <span>浏览</span>
-						</li>
-					</ul>
-				</div>
-				<div class="box-f2">
-					<div class="question_title">
-						<a href="#">这是第一个问题的标题</a>
-					</div>
-					<div class="question_content">问题内容的一部分</div>
-					<div class="question_time">
-						<span> 发布人：发布时间 </span> <span class="tag">标签1</span> <span
-							class="tag">标签2</span>
-					</div>
-				</div>
-				<div class="box-f3">
-					<img src="img/header2.png" />
-				</div>
-			</section>
+			
 		</section>
+		
 		<aside>
 			<h4>所有标签：</h4>
 			<div class="tag">java</div>
@@ -208,6 +86,8 @@
 			<div class="tag">css</div>
 			<div class="tag">oracle</div>
 		</aside>
+		
+		
 	</section>
 
 
@@ -360,8 +240,8 @@
 	
 	
 
-	<!--登录div开始-->
-	<div class="loginregister" id="login">
+<!--登录div开始-->
+<div class="loginregister" id="login">
 		<div>
 			<form>
 				<div class="input_box">
@@ -486,12 +366,6 @@ $(function() {
 			//layer.closeAll();
 		});
 		
-
-		
-		
-		
-		
-		
 	});
 	
 	
@@ -539,6 +413,96 @@ $(function(){
 <!-- 用户信息页面开始 -->
 
 <!-- 用户信息页面结束 -->
+
+
+
+<!-- 显示技术问题页面开始 -->
+<script type="text/javascript">
+//页面加载后，发起ajax请求数据库获取第一页的数据
+$(function(){
+	layui.use('layer', function() {
+	var layer = layui.layer;
+	
+	var iiii = layer.load();
+	
+	$.get("<c:url value='/question'></c:url>",{'method':'technicalPage','currentPage':'1','pageSize':'10'},function(result){
+		layer.close(iiii);
+		//console.log(result);
+		
+		$.each(result.pageList,function(k,v){
+			//投票数
+			var $votecount = v.question.votecount;
+			//回答数
+			var $answercount = v.question.answercount;
+			//浏览数
+			var $browsecount = v.question.browsecount;
+			//标题
+			var $title = v.question.title;
+			//发布人
+			var $name = v.user.name;
+			//发布时间
+			var $time = v.question.releasetime.time;
+			
+			var time = new Date($time);//毫秒转日期格式
+		 
+		    //调用
+		    var $date = time.toMyDateString();
+			//console.log($date);
+			
+			//给页面添加元素
+			var $box = $('<section class="box"></section>');
+			
+			var $box1 = $('<div class="box-f1"><ul><li>'+$votecount+' <span>投票</span></li><li style="border: 1px solid #4eaa4c; color: #4eaa4c;">'+$answercount+' <span>回答</span></li><li>'+$browsecount+' <span>浏览</span></li></ul></div>');
+			
+			var $box2 = $('<div class="box-f2"><div class="question_title"><a href="#">'+$title+'</a></div><div class="question_time"><span> 发布人：'+$name+'@ '+$date+'</span></div></div>');
+			
+			
+			var $box3 = $('<div class="box-f3"><img src="img/header2.jpg" /></div>');
+			
+			
+			
+			$box.append($box1);
+			$box.append($box2);
+			$box.append($box3);
+			
+			$.each(v.labelList,function(j,k){
+				//标签
+				//console.log(k.content);
+				
+				var $label = $('<span class="tag">'+k.content+'</span>');
+				
+				$box2.children('.question_time').append($label);
+				
+			});
+			
+			//问题的内容
+			//console.log(v.question.content);
+			
+			
+			$("#content").append($box);
+			
+		});
+		
+		
+		
+		
+		
+	},"json");
+	
+	
+	
+	//时间转换:毫秒类型转成2017-1-2 12:20
+    Date.prototype.toMyDateString = function() {
+        return this.getFullYear() + "-" + (this.getMonth() + 1) + "-" + this.getDate() + " " + this.getHours() + ":" + this.getMinutes();
+    }
+	
+	});
+});
+</script>
+
+<!-- 显示技术问题页面结束 -->
+
+
 
 
 
