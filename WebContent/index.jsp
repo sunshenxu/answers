@@ -352,6 +352,10 @@ $(function() {
 								layer.closeAll();
 							},1000);
 							
+							//ajax怎么在不刷新页面的情况下获取最新的session值？？
+							
+							window.location.href = "<c:url value='/'></c:url>";
+							
 						}else if(result.loginFlag=="false"){
 							layer.msg("密码不正确",{time:1000});
 						}
@@ -454,7 +458,7 @@ $(function(){
 			
 			var $box1 = $('<div class="box-f1"><ul><li>'+$votecount+' <span>投票</span></li><li style="border: 1px solid #4eaa4c; color: #4eaa4c;">'+$answercount+' <span>回答</span></li><li>'+$browsecount+' <span>浏览</span></li></ul></div>');
 			
-			var $box2 = $('<div class="box-f2"><div class="question_title"><a href="#">'+$title+'</a></div><div class="question_time"><span> 发布人：'+$name+'@ '+$date+'</span></div></div>');
+			var $box2 = $('<div class="box-f2"><div class="question_title"><a href="javascript:void(0);">'+$title+'</a></div><div class="question_time"><span> 发布人：'+$name+'@ '+$date+'</span></div></div>');
 			
 			
 			var $box3 = $('<div class="box-f3"><img src="img/header2.jpg" /></div>');
@@ -478,12 +482,45 @@ $(function(){
 			//问题的内容
 			//console.log(v.question.content);
 			
-			
 			$("#content").append($box);
+			
 			
 		});
 		
 		
+		
+		<!-- 未登录点击链接会跳转到登录界面开始 -->
+		
+		
+		//console.log($('.question_title a'));
+		$('.question_title a').on('click',function(){
+			
+			
+			var sessionUser = "${sessionScope.user}";
+			//console.log(session==null);
+			//console.log(session==""); //未登录的时候为true
+			
+			if(sessionUser==""){  //session中没有user对象，所以去登录
+				layer.open({
+					type : 1,
+					title : '登录',
+					//skin: 'layui-layer-rim', //加上边框
+					area : [ '398px', '345px' ], //宽高:398,222;
+					//content: $('#sublayer'),//content: $('#sublayer').html()会丢失事件
+					resize : false,
+					content : $("#login"),
+					closeBtn : 1,
+					
+				});
+			}else{
+				 //session中有user对象，所以去请求回答页面
+				 
+				window.location.href="<c:url value='/questiondetail.jsp'></c:url>";
+			}
+			
+		});
+		
+		<!-- 未登录点击链接会跳转到登录界面结束 -->
 		
 		
 		
@@ -504,6 +541,23 @@ $(function(){
 
 
 
+
+
+
+
+<script type="text/javascript">
+$(function(){
+	layui.use('layer', function() {
+		var layer = layui.layer;
+		
+		
+		
+		
+	});
+	
+});
+
+</script>
 
 
 
