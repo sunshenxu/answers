@@ -21,19 +21,28 @@ public class QuestionServlet extends BaseServlet{
 			
 	
 	//查询技术问答的当前页面的问题数据
-	public String technicalPage(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public String questionPage(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
 		String currentPage = request.getParameter("currentPage");
 		String pageSize = request.getParameter("pageSize");
 		
+		String questionType = request.getParameter("questionType");
+		String sortType = request.getParameter("sortType");
 		
-		Page<QULs> page = questionService.queryQuestionAndUserAndLabel(Integer.parseInt(currentPage), Integer.parseInt(pageSize));
+		Page<QULs> page = questionService.queryQuestionAndUserAndLabel(Integer.parseInt(currentPage), Integer.parseInt(pageSize), questionType, sortType);
 		
 		JSONObject json = JSONObject.fromObject(page);
 		
 		//System.out.println(fromObject);
 		
 		response.getWriter().print(json);
+		
+		return "";
+	}
+	
+	public String labelList(HttpServletRequest request, HttpServletResponse response) {
+		
+		
 		
 		return "";
 	}

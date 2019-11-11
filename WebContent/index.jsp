@@ -23,14 +23,23 @@
 				$(ele).toggleClass("menu-item");
 			});
 		});
+
+		
 	});
 </script>
 </head>
 <body>
+	<!-- 标识，如果没有登录，而直接通过url地址栏访问我要提问按钮，就会自动跳转到首页，
+		不能直接访问，并且提示让你去登录
+	 -->
+	<span id="logstatus" status="${requestScope.sf }"></span>
+	
 	<header>
 		<div id="headerbar">
 			<ul id="navigation">
-				<li><a href="#">首页</a></li>
+			
+				<li><a href="javascript:void(0);">首页</a></li>
+				
 				<!-- <li><a href="#">问答</a></li> -->
 			</ul>
 			
@@ -54,7 +63,7 @@
 	<section id="title">
 		<div id="titlebar">
 			<div id="leftquestion">
-				<a href="#">我要提问</a>
+				<a href="javascript:void(0);">我要提问</a>
 			</div>
 			<div id="rightquestion">
 				<input type="text" placeholder="请输入查询关键字" /> <a href="#"><img
@@ -91,7 +100,10 @@
 	</section>
 
 
+<!-- 显示所有标签开始 -->
 
+
+<!-- 显示所有标签结束 -->
 
 
 
@@ -425,42 +437,89 @@ $(function(){
 //页面加载后，发起ajax请求数据库获取第一页的数据
 
 $(function(){
-	loadQuestion('1');  //'1'表示技术问答
+	var questionFlag = '1';  //默认是技术问答
+	var sortFlag = '1';     //默认是按时间加载数据
+	loadQuestion(questionFlag,sortFlag);  //'1'表示技术问答
 	
 	$("#menu a:eq(0)").on('click',function(){
 		//先删除内容
 		$(".box").remove();
-		
-		loadQuestion('1');//'1'表示技术问答
+		questionFlag = '1';//'1'表示技术问答
+		loadQuestion(questionFlag,sortFlag);
 		
 	});
 	$("#menu a:eq(1)").on('click',function(){
 		//先删除内容
 		$(".box").remove();
-		
-		loadQuestion('2');//'2'表示面试题
+		questionFlag = '2';//'2'表示面试题
+		loadQuestion(questionFlag,sortFlag);
 		
 	});
 	$("#menu a:eq(2)").on('click',function(){
 		//先删除内容
 		$(".box").remove();
-		
-		loadQuestion('3');//'3'表示即时回答
+		questionFlag = '3';//'3'表示即时回答
+		loadQuestion(questionFlag,sortFlag);
 		
 	});
+	
+	//按时间排序:'1'
+	$("#order a:eq(0)").on("click",function(){
+		//先删除内容
+		$(".box").remove();
+		sortFlag = '1';    //'1'表示最新提问
+		loadQuestion(questionFlag,sortFlag);
+		
+		//点击的那一个字体加粗，其余2个的都正常
+		$(this).css("font-weight","bold");
+		$("#order a:eq(1)").css("font-weight","normal");
+		$("#order a:eq(2)").css("font-weight","normal");
+	});
+	
+	//按尚未回答排序：'2'
+	$("#order a:eq(1)").on("click",function(){
+		//先删除内容
+		$(".box").remove();
+		sortFlag = '2';    //'2' 表示尚未回答
+		loadQuestion(questionFlag,sortFlag);
+		
+		//点击的那一个字体加粗，其余2个的都正常
+		$(this).css("font-weight","bold");
+		$("#order a:eq(0)").css("font-weight","normal");
+		$("#order a:eq(2)").css("font-weight","normal");
+	});
+	
+	//按热门排序：'3'
+	$("#order a:eq(2)").on("click",function(){
+		//先删除内容
+		$(".box").remove();
+		sortFlag = '3';    //'3' 表示热门
+		loadQuestion(questionFlag,sortFlag);
+		
+		//点击的那一个字体加粗，其余2个的都正常
+		$(this).css("font-weight","bold");
+		$("#order a:eq(0)").css("font-weight","normal");
+		$("#order a:eq(1)").css("font-weight","normal");
+	});
+	
+	//默认刚开始时，'最新提问' 字体加粗
+	$("#order a:eq(0)").css("font-weight","bold");
 	
 	
 });
 
-function loadQuestion(type){
+//参数1：questionType表示问题的类型 '1':技术问答； '2'：面试问题； '3'：即时问答
+//参数2：sortType表示问题排序的类型'1'：最新排序； '2'：尚未回答； '3'：热门
+function loadQuestion(questionType,sortType){
 	//一个标志位，当为true的时候，才会触发加载事件。
 	//目的：加载完最后一页数据后就不在加载数据了
 	edit=true;
 	//刚加载页面后就显示第一页的数据
 	var cpage = 1;
-	loadData(cpage, 10, type);
+	loadData(cpage, 10, questionType,sortType);
 	
 	//当页面滚动到底后加载第n页数据
+	
 	
 	
 	//$(window).off("scroll");   //先清除原来的滚动事件
@@ -473,7 +532,7 @@ function loadQuestion(type){
 	        if (scrollTop + windowHeight+20 >= scrollHeight && edit) {
 	        	edit = false;   //保证在20px的范围内，滚动事件只会触发一次
 	        	cpage++;
-	        	loadData(cpage, 10, type);
+	        	loadData(cpage, 10, questionType,sortType);
 	        
 	        }
 	    }
@@ -482,17 +541,16 @@ function loadQuestion(type){
 
 
 
-function loadData(currentPage, pageSize, type){
+function loadData(currentPage, pageSize, questionType, sortType){
 	
 	layui.use('layer', function() {
 	var layer = layui.layer;
 	
 	var iiii = layer.load();
 	
-	$.get("<c:url value='/question'></c:url>",{'method':'questionPage','type':type,'currentPage':currentPage,'pageSize':pageSize},function(result){
+	$.get("<c:url value='/question'></c:url>",{'method':'questionPage','questionType':questionType,'sortType':sortType,'currentPage':currentPage,'pageSize':pageSize},function(result){
 		layer.close(iiii);
-		
-		
+
 		//console.log(result);
 		
 		$.each(result.pageList,function(k,v){
@@ -558,7 +616,7 @@ function loadData(currentPage, pageSize, type){
 			layer.msg("已经是最后一页啦",{time:1000});  //最后一页的话就不在加载数据了
 			$(window).off("scroll");  //取消滚动事件
 		}else if(result.totalPage == 0){
-			layer.msg("占时还没有问题，快去提问吧！",{time:1000}); //没有数据也不在加载数据
+			layer.msg("暂时还没有问题，快去提问吧！",{time:1000}); //没有数据也不在加载数据
 			$(window).off("scroll");  //取消滚动事件
 		}else{
 			
@@ -567,37 +625,15 @@ function loadData(currentPage, pageSize, type){
 		
 		
 		
-		
 		<!-- 未登录点击链接会跳转到登录界面开始 -->
 		
 		//console.log($('.question_title a'));
 		$('.question_title a').on('click',function(){
 			
-			
-			var sessionUser = "${sessionScope.user}";
-			//console.log(session==null);
-			//console.log(session==""); //未登录的时候为true
-			
-			if(sessionUser==""){  //session中没有user对象，所以去登录
-				layer.open({
-					type : 1,
-					title : '登录',
-					//skin: 'layui-layer-rim', //加上边框
-					area : [ '398px', '345px' ], //宽高:398,222;
-					//content: $('#sublayer'),//content: $('#sublayer').html()会丢失事件
-					resize : false,
-					content : $("#login"),
-					closeBtn : 1,
-					
-				});
-			}else{
-				 //session中有user对象，所以去请求回答页面
-				 
-				window.location.href="<c:url value='/questiondetail.jsp'></c:url>";
-			}
-			
+			isLog("<c:url value='/questiondetail.jsp'></c:url>");
 			
 		});
+
 		
 		
 		<!-- 未登录点击链接会跳转到登录界面结束 -->
@@ -656,6 +692,33 @@ function loadData(currentPage, pageSize, type){
 	});
 	
 }
+
+//如果没有登录就跳转到登录界面，登录了就跳转到指定的url的页面
+function isLog(url){
+	var sessionUser = "${sessionScope.user}";
+	//console.log(session==null);
+	//console.log(session==""); //未登录的时候为true
+	
+	if(sessionUser==""){  //session中没有user对象，所以去登录
+		layer.open({
+			type : 1,
+			title : '登录',
+			//skin: 'layui-layer-rim', //加上边框
+			area : [ '398px', '345px' ], //宽高:398,222;
+			//content: $('#sublayer'),//content: $('#sublayer').html()会丢失事件
+			resize : false,
+			content : $("#login"),
+			closeBtn : 1,
+			
+		});
+	}else{
+		 //session中有user对象，所以去请求回答页面
+		 
+		window.location.href=url;
+	}
+}
+
+
 </script>
 
 
@@ -666,13 +729,31 @@ function loadData(currentPage, pageSize, type){
 
 
 
-
+<!-- 首页和我要提问 开始-->
 <script type="text/javascript">
 $(function(){
 	layui.use('layer', function() {
 		var layer = layui.layer;
+		//显示首页
+		$("#navigation li a").on('click',function(){
+			window.location.href = "<c:url value='/'></c:url>";
+			
+		});
+		
+		//跳转到我要提问界面，点击我要提问时，如果没有登录就跳转到登录页面
+		$("#leftquestion a").on('click',function(){
+			//如果没有登录，跳转到登录页面
+			isLog("<c:url value='/putquestion?method=islog'></c:url>");
+			
+		});
 		
 		
+		//如果没有登录，就会提示让你登录，并可以直接通过url访问提问页面
+		var f = $("#logstatus").attr("status");
+		
+		if(f=="false"){
+			layer.msg("会话已经失效，请重新登录",{time:1000});
+		}
 		
 		
 	});
@@ -681,8 +762,7 @@ $(function(){
 
 </script>
 
-
-
+<!-- 首页和我要提问 结束-->
 
 
 
