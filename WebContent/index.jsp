@@ -68,12 +68,12 @@
 		
 			<div id="headlist">
 				<div id="menu">
-					<a href="#" class="menu-item">技术问答</a> <a href="#">面试题</a> <a
-						href="#">即时问答</a>
+					<a href="javascript:void(0);" class="menu-item">技术问答</a> <a href="javascript:void(0);">面试题</a> <a
+						href="javascript:void(0);">即时问答</a>
 				</div>
 				<div id="order">
-					<span>排列:</span> <a href="#">最新提问</a> <a href="#">尚未回答</a> <a
-						href="#">热门</a>
+					<span>排列:</span> <a href="javascript:void(0);">最新提问</a> <a href="javascript:void(0);">尚未回答</a> <a
+						href="javascript:void(0);">热门</a>
 				</div>
 			</div>
 			
@@ -420,17 +420,79 @@ $(function(){
 
 
 
-<!-- 显示技术问题页面开始 -->
+<!-- 显示问题页面开始 -->
 <script type="text/javascript">
 //页面加载后，发起ajax请求数据库获取第一页的数据
+
 $(function(){
+	loadQuestion('1');  //'1'表示技术问答
+	
+	$("#menu a:eq(0)").on('click',function(){
+		//先删除内容
+		$(".box").remove();
+		
+		loadQuestion('1');//'1'表示技术问答
+		
+	});
+	$("#menu a:eq(1)").on('click',function(){
+		//先删除内容
+		$(".box").remove();
+		
+		loadQuestion('2');//'2'表示面试题
+		
+	});
+	$("#menu a:eq(2)").on('click',function(){
+		//先删除内容
+		$(".box").remove();
+		
+		loadQuestion('3');//'3'表示即时回答
+		
+	});
+	
+	
+});
+
+function loadQuestion(type){
+	//一个标志位，当为true的时候，才会触发加载事件。
+	//目的：加载完最后一页数据后就不在加载数据了
+	edit=true;
+	//刚加载页面后就显示第一页的数据
+	var cpage = 1;
+	loadData(cpage, 10, type);
+	
+	//当页面滚动到底后加载第n页数据
+	
+	
+	//$(window).off("scroll");   //先清除原来的滚动事件
+    $(window).scroll(
+	    function () {
+	        var scrollTop = $(this).scrollTop();
+	        var scrollHeight = $(document).height();
+	        var windowHeight = $(this).height();
+	        
+	        if (scrollTop + windowHeight+20 >= scrollHeight && edit) {
+	        	edit = false;   //保证在20px的范围内，滚动事件只会触发一次
+	        	cpage++;
+	        	loadData(cpage, 10, type);
+	        
+	        }
+	    }
+    );
+}
+
+
+
+function loadData(currentPage, pageSize, type){
+	
 	layui.use('layer', function() {
 	var layer = layui.layer;
 	
 	var iiii = layer.load();
 	
-	$.get("<c:url value='/question'></c:url>",{'method':'technicalPage','currentPage':'1','pageSize':'10'},function(result){
+	$.get("<c:url value='/question'></c:url>",{'method':'questionPage','type':type,'currentPage':currentPage,'pageSize':pageSize},function(result){
 		layer.close(iiii);
+		
+		
 		//console.log(result);
 		
 		$.each(result.pageList,function(k,v){
@@ -450,7 +512,8 @@ $(function(){
 			var time = new Date($time);//毫秒转日期格式
 		 
 		    //调用
-		    var $date = time.toMyDateString();
+		    //var $date = time.toMyDateString();
+		    var $date = time.Format("yyyy-MM-dd HH:mm:ss");
 			//console.log($date);
 			
 			//给页面添加元素
@@ -489,8 +552,23 @@ $(function(){
 		
 		
 		
-		<!-- 未登录点击链接会跳转到登录界面开始 -->
+		//当是最后一页，或者页面没有数据的时候，取消滚动事件
 		
+		if(currentPage == result.totalPage){
+			layer.msg("已经是最后一页啦",{time:1000});  //最后一页的话就不在加载数据了
+			$(window).off("scroll");  //取消滚动事件
+		}else if(result.totalPage == 0){
+			layer.msg("占时还没有问题，快去提问吧！",{time:1000}); //没有数据也不在加载数据
+			$(window).off("scroll");  //取消滚动事件
+		}else{
+			
+			edit = true;   //如果不是最后一页和没有数据的话就继续加载数据
+		}
+		
+		
+		
+		
+		<!-- 未登录点击链接会跳转到登录界面开始 -->
 		
 		//console.log($('.question_title a'));
 		$('.question_title a').on('click',function(){
@@ -518,7 +596,9 @@ $(function(){
 				window.location.href="<c:url value='/questiondetail.jsp'></c:url>";
 			}
 			
+			
 		});
+		
 		
 		<!-- 未登录点击链接会跳转到登录界面结束 -->
 		
@@ -530,14 +610,56 @@ $(function(){
 	
 	//时间转换:毫秒类型转成2017-1-2 12:20
     Date.prototype.toMyDateString = function() {
-        return this.getFullYear() + "-" + (this.getMonth() + 1) + "-" + this.getDate() + " " + this.getHours() + ":" + this.getMinutes();
+        return this.getFullYear() + "-" + (this.getMonth() + 1) + "-" + this.getDate() + " " + this.getHours() + ":" + this.getMinutes()+ ":" +this.getSeconds();
     }
 	
+  	 //---------------------------------------------------
+	 // 日期格式化
+	 // 格式 YYYY/yyyy/YY/yy 表示年份
+	 // MM/M 月份
+	 // W/w 星期
+	 // dd/DD/d/D 日期
+	 // hh/HH/h/H 时间
+	 // mm/m 分钟
+	 // ss/SS/s/S 秒
+	 //---------------------------------------------------
+	 Date.prototype.Format = function(formatStr){
+		 var str = formatStr;
+		 var Week = ['日','一','二','三','四','五','六'];
+		
+		 str=str.replace(/yyyy|YYYY/,this.getFullYear());
+		 str=str.replace(/yy|YY/,(this.getYear() % 100)>9?(this.getYear() % 100).toString():'0' + (this.getYear() % 100));
+		
+		 str=str.replace(/MM/,this.getMonth()>9?this.getMonth().toString():'0' + this.getMonth());
+		 str=str.replace(/M/g,this.getMonth());
+		
+		 str=str.replace(/w|W/g,Week[this.getDay()]);
+		
+		 str=str.replace(/dd|DD/,this.getDate()>9?this.getDate().toString():'0' + this.getDate());
+		 str=str.replace(/d|D/g,this.getDate());
+		
+		 str=str.replace(/hh|HH/,this.getHours()>9?this.getHours().toString():'0' + this.getHours());
+		 str=str.replace(/h|H/g,this.getHours());
+		 str=str.replace(/mm/,this.getMinutes()>9?this.getMinutes().toString():'0' + this.getMinutes());
+		 str=str.replace(/m/g,this.getMinutes());
+		
+		 str=str.replace(/ss|SS/,this.getSeconds()>9?this.getSeconds().toString():'0' + this.getSeconds());
+		 str=str.replace(/s|S/g,this.getSeconds());
+		
+		 return str;
+	 }
+
+	
+	
+	
+	
 	});
-});
+	
+}
 </script>
 
-<!-- 显示技术问题页面结束 -->
+
+<!-- 显示问题页面结束 -->
 
 
 
