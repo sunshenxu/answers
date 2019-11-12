@@ -27,16 +27,7 @@
 						$(ele).toggleClass("menu-item");
 					});
 				});
-
-                $("#answersubbtn").click(function(){
-				
-				   
-				   alert(CKEDITOR.instances['editor'].getData());
-				   alert(CKEDITOR.instances.editor.getData());
-
-				    
-				
-				})
+               
 			});
 		</script>
 		<style type="text/css">
@@ -49,6 +40,9 @@
 				 position: absolute;
 				 right: 30px;
 				 top: 18px;
+			}
+			.layui-input-block{
+				margin-left: 0px;
 			}
 		</style>
 	</head>
@@ -120,8 +114,9 @@
 					<div class="form-label">
 						<label>分类:</label>
 					</div>
+					
 					<div class="form-input-inline">
-						<span class="choice">
+						<!-- <span class="choice">
 								<input type="radio" id="rdo1" name="radio" checked="checked" />
 								<label for="rdo1">技术问答</label>
 						</span>
@@ -132,9 +127,26 @@
 						<span class="choice">
 								<input type="radio" id="rdo4" name="radio" />
 								<label for="rdo4">即时问答</label>
-							</span>
-
+							</span> -->
+							
+						
+							
+				<div class="layui-form ">
+					<div class="layui-form-item ">
+					    <div class="layui-input-block" >
+					      <input type="radio" name="radio" value="technical" title="技术问答" checked>
+					      <input type="radio" name="radio" value="interview" title="面试题">
+					      <input type="radio" name="radio" value="task" title="作业问答" >
+					    </div>
 					</div>
+				</div>
+							
+
+				</div>
+				
+					
+				  	
+					
 				</div>
 				<div class="form-item">
 					<div class="form-label-small">
@@ -142,32 +154,32 @@
 					</div>
 					<div class="form-input-inline-small">
 						<span class="tagchoice">
-								<input type="checkbox" id="check1" name="check" checked="checked"/>
-								<label for="check1">java</label>
+								<input type="checkbox" id="1" name="check" checked="checked"/>
+								<label for="1">java</label>
 							</span>
 						<span class="tagchoice">
-								<input type="checkbox" id="check2" name="check" />
-								<label for="check2">html</label>
+								<input type="checkbox" id="2" name="check" />
+								<label for="2">html</label>
 							</span>
 						<span class="tagchoice">
-								<input type="checkbox" id="check3" name="check" />
-								<label for="check3">css</label>
+								<input type="checkbox" id="3" name="check" />
+								<label for="3">css</label>
 							</span>
 						<span class="tagchoice">
-								<input type="checkbox" id="check4" name="check" />
-								<label for="check4">jquery</label>
+								<input type="checkbox" id="4" name="check" />
+								<label for="4">jquery</label>
 							</span>
 						<span class="tagchoice">
-								<input type="checkbox" id="check5" name="check" />
-								<label for="check5">ajax</label>
+								<input type="checkbox" id="5" name="check" />
+								<label for="5">ajax</label>
 							</span>
 						<span class="tagchoice">
-								<input type="checkbox" id="check6" name="check" />
-								<label for="check6">jsp</label>
+								<input type="checkbox" id="6" name="check" />
+								<label for="6">js</label>
 							</span>
-						<span class="tagchoice">
-								<input type="checkbox" id="check7" name="check" />
-								<label for="check7">javascript</label>
+							<span class="tagchoice">
+								<input type="checkbox" id="7" name="check" />
+								<label for="7">jsp</label>
 							</span>
 					</div>
 				</div>
@@ -176,34 +188,27 @@
 						<label></label>
 					</div>
 					<div class="form-input-inline-small">
+						
 						<span class="tagchoice">
-								<input type="checkbox" id="check8" name="check" />
-								<label for="check8">servlet</label>
+								<input type="checkbox" id="8" name="check" />
+								<label for="8">servlet</label>
 							</span>
 						<span class="tagchoice">
-								<input type="checkbox" id="check9" name="check" />
-								<label for="check9">struts</label>
+								<input type="checkbox" id="9" name="check" />
+								<label for="9">spring</label>
 							</span>
 						<span class="tagchoice">
-								<input type="checkbox" id="check10" name="check" />
-								<label for="check10">spring</label>
+								<input type="checkbox" id="10" name="check" />
+								<label for="10">mybatis</label>
 							</span>
 						<span class="tagchoice">
-								<input type="checkbox" id="check11" name="check" />
-								<label for="check11">struts</label>
+								<input type="checkbox" id="11" name="check" />
+								<label for="11">mysql</label>
 							</span>
 						<span class="tagchoice">
-								<input type="checkbox" id="check12" name="check" />
-								<label for="check12">mybatis</label>
+								<input type="checkbox" id="12" name="check" />
+								<label for="12">others</label>
 							</span>
-						<span class="tagchoice">
-								<input type="checkbox" id="check13" name="check" />
-								<label for="check13">database</label>
-							</span>
-						<span class="tagchoice">
-								<input type="checkbox" id="check14" name="check" />
-								<label for="check14">others</label>
-						</span>
 					</div>
 				</div>
 				<div style="margin-top: 50px;">
@@ -224,6 +229,8 @@
 				<div class="tag">html</div>
 			</aside>
 		</section>
+		
+		
 
 		<!--注册div开始-->
 <div id="register" style="display:none">
@@ -276,6 +283,8 @@
 	</form>
 
 </div>
+
+
 
 <script>
 	$(function() {
@@ -567,6 +576,91 @@ $(function(){
 </script>
 
 <!-- 跳转到首页结束 -->
+
+
+
+
+<!--  -->
+<script type="text/javascript">
+$(function(){
+	layui.use('layer', function() {
+		var layer = layui.layer;
+	//标签最多只能选择3个
+	$(":checkbox").on('click',function(){
+		//console.log($(".tagchoice input:checked").length);
+		//console.log($(".tagchoice input:checked"));
+		
+		if($(".tagchoice input:checked").length>3){
+			
+			layer.msg("选中项不能超过三个",{time:1000});
+			$(this).prop("checked",false);
+		}
+	});
+	
+	$("#answersubbtn").on('click',function(){
+		//alert(CKEDITOR.instances['editor'].getData());
+	   	//alert(CKEDITOR.instances.editor.getData());
+		
+		if($(".tagchoice input:checked").length==0){
+			
+			layer.msg("至少选择一个标签",{time:1000});
+			$(this).prop("checked",false);
+			return ;
+		}
+	   	
+		var $titleNode = $(".ask");
+		var $title = $titleNode.val();  //标题
+		
+		if($title==""){
+			layer.msg("标题不能为空",{time:1000});
+			return ;
+		}
+		
+	   var $questionType = $(".layui-input-block input:checked").val();
+	   
+	   //var $labelNodes = $(".tagchoice input:checked").attr("id");
+	   
+	   var labelId = "";
+	   $($(".tagchoice input:checked")).each(function(k,v){
+		  
+		   labelId += $(v).attr("id")+",";
+	   });
+	   
+	   
+	   var $content = CKEDITOR.instances.editor.getData();
+	   
+	   $.post("<c:url value='/putquestion'></c:url>",
+		{
+		   'method':'putQuestions',
+		   'title':$title,
+		   "labelId":labelId,  //将其转为字符串，然后在提交给后台
+		   'questionType':$questionType,
+		   'content':$content
+		},
+		function(result){
+		   //console.log(result);
+			if(result.putfalg == 'true'){
+				window.location.href = "<c:url value='/'></c:url>";
+			}else if(result.putfalg == 'false'){
+				layer.msg("提问失败",{time:1000});
+			}  
+			   
+			   
+	   },'json');
+	   
+	
+	});
+	
+	
+	
+	
+	
+	});
+});
+
+</script>
+
+
 
 
 

@@ -411,6 +411,7 @@ $(function(){
 	});
 });
 
+
 </script>
 <!-- 退出登录结束 -->
 
@@ -530,15 +531,19 @@ $(function(){
 	$("#rightquestion input").on('keypress',function(event){
 		if(event.keyCode == "13"){
 			serchQuestion();
-			
+			$("#rightquestion input").val("");  //查询完后，将输入框置为空
 	    }
 		
 	});
 	
 	
+	
+	
+	
 	//添加点击搜索按钮模糊查询事件
 	$("#rightquestion a").on('click',function(){
 		serchQuestion();
+		$("#rightquestion input").val("");  //查询完后，将输入框置为空
 	});
 	
 	
@@ -566,6 +571,9 @@ $(function(){
     	        }
     	    }
         );
+      	
+      
+      	
 	}
 	
 	
