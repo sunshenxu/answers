@@ -10,8 +10,8 @@ import com.answers.entity.QULs;
 public interface IQuestionService {
 	
 	//获取当前页面的问题数据,包括问题，提问人，和标签
-	public Page<QULs> queryQuestionAndUserAndLabel(int currentPage, int pageSize, String questionType, String sortType);
+	public Page<QULs> queryQuestionAndUserAndLabel(int currentPage, int pageSize, String questionType, String sortType,int labelId);
 
 	//查询所有的标签
-	public List<Label> queryAllLabelDao();
+	public List<Label> queryAllLabelService();
 }

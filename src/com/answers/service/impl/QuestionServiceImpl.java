@@ -24,19 +24,26 @@ public class QuestionServiceImpl implements IQuestionService{
 	
 	//获取当前页面的问题数据,包括问题，提问人，和标签
 	@Override
-	public Page<QULs> queryQuestionAndUserAndLabel(int currentPage, int pageSize, String questionType, String sortType) {
+	public Page<QULs> queryQuestionAndUserAndLabel(int currentPage, int pageSize, String questionType, String sortType,int labelId) {
 		try {
 			//开启事务
 			TransactionUtil.startTransaction();
 			
 			List<QULs> qulsList = new ArrayList<QULs>();
 			
-			int totalCount = questionDao.queryQuestionCount(questionType, sortType);
-			
-			List<Question> queryTechnicalList = questionDao.queryQuestionList(currentPage, pageSize, questionType, sortType);
+			int totalCount = 0;
+			List<Question> queryList = null;
+			if(labelId==-1) {  //不带标签查找
+				totalCount = questionDao.queryQuestionCount(questionType, sortType);
+				queryList = questionDao.queryQuestionList(currentPage, pageSize, questionType, sortType);
+				
+			}else {  //带标签查找
+				totalCount = questionDao.queryQuestionCount(questionType, sortType, labelId);
+				queryList = questionDao.queryQuestionList(currentPage, pageSize, questionType, sortType,labelId);
+			}
 			
 			//循环每一个问题，找到对应问题的用户信息和标签信息
-			for (Question question : queryTechnicalList) {
+			for (Question question : queryList) {
 				String userid = question.getUserid();
 				//查找到对应的用户信息
 				User user = questionDao.queryUserByUserId(userid);
@@ -76,7 +83,7 @@ public class QuestionServiceImpl implements IQuestionService{
 
 	//查询所有的标签
 	@Override
-	public List<Label> queryAllLabelDao() {
+	public List<Label> queryAllLabelService() {
 		
 		return questionDao.queryAllLabelDao();
 	}

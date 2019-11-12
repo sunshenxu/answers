@@ -21,7 +21,7 @@ import com.answers.utils.TransactionUtil;
 public class QuestionDaoImpl implements IQuestionDao{
 	private DataSource dataSource = DbcpUtil.getBasicDataSourceByProperties();
 	
-	//查询当前页面的问题
+	//查询当前页面的问题，不带标签查询
 	@Override
 	public List<Question> queryQuestionList(int currentPage, int pageSize, String questionType, String sortType) {
 		
@@ -79,6 +79,63 @@ public class QuestionDaoImpl implements IQuestionDao{
 
 	
 	
+	
+	
+	//查询当前页面的问题，带标签查询
+	@Override
+	public List<Question> queryQuestionList(int currentPage, int pageSize, String questionType, String sortType,int labelId) {
+		
+		Connection connection = TransactionUtil.getConnection();
+		QueryRunner runner = new QueryRunner();
+		String sql = "";
+		if("1".equals(questionType)) {
+			if("1".equals(sortType)) {
+				sql = "SELECT a.* FROM technical AS a INNER JOIN technicalflag AS b ON  a.id=b.technicalid AND b.labelid=? ORDER BY releasetime DESC LIMIT ?,?";
+			}else if("2".equals(sortType)) {
+				sql = "SELECT a.* FROM technical AS a INNER JOIN technicalflag AS b ON  a.id=b.technicalid AND b.labelid=? AND a.answercount=0 ORDER BY releasetime DESC LIMIT ?,?";
+			}else if("3".equals(sortType)) {
+				sql = "SELECT a.* FROM technical AS a INNER JOIN technicalflag AS b ON  a.id=b.technicalid AND b.labelid=? ORDER BY browsecount DESC LIMIT ?,?";
+			}
+		}else if("2".equals(questionType)) {
+			if("1".equals(sortType)) {
+				sql = "SELECT a.* FROM interview AS a INNER JOIN interviewflag AS b ON  a.id=b.interviewid AND b.labelid=? ORDER BY releasetime DESC LIMIT ?,?";
+			}else if("2".equals(sortType)) {
+				sql = "SELECT a.* FROM interview AS a INNER JOIN interviewflag AS b ON  a.id=b.interviewid AND b.labelid=? AND a.answercount=0 ORDER BY releasetime DESC LIMIT ?,?";
+			}else if("3".equals(sortType)) {
+				sql = "SELECT a.* FROM interview AS a INNER JOIN interviewflag AS b ON  a.id=b.interviewid AND b.labelid=? ORDER BY browsecount DESC LIMIT ?,?";
+			}
+			
+		}else if("3".equals(questionType)) {
+			if("1".equals(sortType)) {
+				sql = "SELECT a.* FROM task AS a INNER JOIN taskflag AS b ON  a.id=b.taskid AND b.labelid=? ORDER BY releasetime DESC LIMIT ?,?";
+			}else if("2".equals(sortType)) {
+				sql = "SELECT a.* FROM task AS a INNER JOIN taskflag AS b ON  a.id=b.taskid AND b.labelid=? AND a.answercount=0 ORDER BY releasetime DESC LIMIT ?,?";
+			}else if("3".equals(sortType)) {
+				sql = "SELECT a.* FROM task AS a INNER JOIN taskflag AS b ON  a.id=b.taskid AND b.labelid=? ORDER BY browsecount DESC LIMIT ?,?";
+			}
+		}
+		
+		try {
+			
+			List<Question> questionList = runner.query(connection, sql, new BeanListHandler<Question>(Question.class),labelId,(currentPage-1)*pageSize, pageSize);
+			return questionList;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	//查询问题对应的用户
 	@Override
 	public User queryUserByUserId(String userId){
@@ -129,7 +186,7 @@ public class QuestionDaoImpl implements IQuestionDao{
 	}
 
 
-	//查询问题的总数
+	//查询问题的总数，没有标签
 	@Override
 	public int queryQuestionCount(String questionType, String sortType) {
 		Connection connection = TransactionUtil.getConnection();
@@ -173,6 +230,53 @@ public class QuestionDaoImpl implements IQuestionDao{
 		return 0;
 	}
 
+	
+	
+	//查询问题的总数，有标签
+		@Override
+		public int queryQuestionCount(String questionType, String sortType,int labelId) {
+			Connection connection = TransactionUtil.getConnection();
+			QueryRunner runner = new QueryRunner();
+			
+			String sql = "";
+			
+			if("1".equals(questionType)) {
+				if("2".equals(sortType)) {
+					sql = "SELECT COUNT(1) FROM technical AS a INNER JOIN technicalflag AS b ON a.answercount=0 AND a.id=b.technicalid AND b.labelid=?";
+				}else {
+					sql = "SELECT COUNT(1) FROM technical AS a INNER JOIN technicalflag AS b ON a.id=b.technicalid AND b.labelid=?";
+				}
+			}else if("2".equals(questionType)) {
+				if("2".equals(sortType)) {
+					sql = "SELECT COUNT(1) FROM interview AS a INNER JOIN interviewflag AS b ON a.answercount=0 AND a.id=b.interviewid AND b.labelid=?";
+				}else {
+					sql = "SELECT COUNT(1) FROM interview AS a INNER JOIN interviewflag AS b ON a.id=b.interviewid AND b.labelid=?";
+				}
+				
+			}else if("3".equals(questionType)) {
+				if("2".equals(sortType)) {
+					sql = "SELECT COUNT(1) FROM task AS a INNER JOIN taskflag AS b ON a.answercount=0 AND a.id=b.taskid AND b.labelid=?";
+				}else {
+					sql = "SELECT COUNT(1) FROM task AS a INNER JOIN taskflag AS b ON a.id=b.taskid AND b.labelid=?";
+				}
+				
+			}
+			
+			try {
+				Object[] obj = runner.query(connection, sql, new ArrayHandler(),labelId);
+				
+				int count = Integer.parseInt(obj[0].toString());
+				
+				return count;
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			
+			
+			return 0;
+		}
+
+	
 
 
 	//查询所有的标签

@@ -8,6 +8,7 @@
 <title></title>
 
 
+
 <script type="text/javascript" src="layui/layui.js"></script>
 <link rel="stylesheet" href="layui/css/layui.css" media="all">
 <script type="text/javascript" src="js/jquery-3.3.1.js"></script>
@@ -66,7 +67,7 @@
 				<a href="javascript:void(0);">我要提问</a>
 			</div>
 			<div id="rightquestion">
-				<input type="text" placeholder="请输入查询关键字" /> <a href="#"><img
+				<input type="text" placeholder="请输入问题标题进行查询" /> <a href="#"><img
 					src="img/ic_search.svg" /></a>
 			</div>
 		</div>
@@ -88,25 +89,13 @@
 			
 		</section>
 		
-		<aside>
+		<aside id="tagList">
 			<h4>所有标签：</h4>
-			<div class="tag">java</div>
-			<div class="tag">mysql</div>
-			<div class="tag">css</div>
-			<div class="tag">oracle</div>
+			
 		</aside>
 		
 		
 	</section>
-
-
-<!-- 显示所有标签开始 -->
-
-
-<!-- 显示所有标签结束 -->
-
-
-
 
 
 
@@ -437,29 +426,29 @@ $(function(){
 //页面加载后，发起ajax请求数据库获取第一页的数据
 
 $(function(){
-	var questionFlag = '1';  //默认是技术问答
-	var sortFlag = '1';     //默认是按时间加载数据
-	loadQuestion(questionFlag,sortFlag);  //'1'表示技术问答
+	questionFlag = '1';  //默认是技术问答
+	sortFlag = '1';     //默认是按时间加载数据
+	loadQuestion(questionFlag,sortFlag,'-1');  //'1'表示技术问答
 	
 	$("#menu a:eq(0)").on('click',function(){
 		//先删除内容
 		$(".box").remove();
 		questionFlag = '1';//'1'表示技术问答
-		loadQuestion(questionFlag,sortFlag);
+		loadQuestion(questionFlag,sortFlag,'-1');
 		
 	});
 	$("#menu a:eq(1)").on('click',function(){
 		//先删除内容
 		$(".box").remove();
 		questionFlag = '2';//'2'表示面试题
-		loadQuestion(questionFlag,sortFlag);
+		loadQuestion(questionFlag,sortFlag,'-1');
 		
 	});
 	$("#menu a:eq(2)").on('click',function(){
 		//先删除内容
 		$(".box").remove();
 		questionFlag = '3';//'3'表示即时回答
-		loadQuestion(questionFlag,sortFlag);
+		loadQuestion(questionFlag,sortFlag,'-1');
 		
 	});
 	
@@ -468,7 +457,7 @@ $(function(){
 		//先删除内容
 		$(".box").remove();
 		sortFlag = '1';    //'1'表示最新提问
-		loadQuestion(questionFlag,sortFlag);
+		loadQuestion(questionFlag,sortFlag,'-1');
 		
 		//点击的那一个字体加粗，其余2个的都正常
 		$(this).css("font-weight","bold");
@@ -481,7 +470,7 @@ $(function(){
 		//先删除内容
 		$(".box").remove();
 		sortFlag = '2';    //'2' 表示尚未回答
-		loadQuestion(questionFlag,sortFlag);
+		loadQuestion(questionFlag,sortFlag,'-1');
 		
 		//点击的那一个字体加粗，其余2个的都正常
 		$(this).css("font-weight","bold");
@@ -494,7 +483,7 @@ $(function(){
 		//先删除内容
 		$(".box").remove();
 		sortFlag = '3';    //'3' 表示热门
-		loadQuestion(questionFlag,sortFlag);
+		loadQuestion(questionFlag,sortFlag,'-1');
 		
 		//点击的那一个字体加粗，其余2个的都正常
 		$(this).css("font-weight","bold");
@@ -506,17 +495,49 @@ $(function(){
 	$("#order a:eq(0)").css("font-weight","bold");
 	
 	
+	
+	//显示所有标签开始
+	$.get("<c:url value='/question'></c:url>",{'method':'labelList'},function(result){
+		//返回所有的标签的集合
+		//console.log(result);
+		$.each(result,function(k,v){
+			//动态生成标签节点
+			var $tag = $('<div class="tag" id="'+v.id+'">'+v.content+'</div>');
+			$("#tagList").append($tag);
+			
+		});
+		
+		//添加点击事件，按照标签进行查找问题
+		$(".tag").css("cursor","pointer");
+		$(".tag").on("click",function(){
+			//console.log($(this).attr("id"));
+			//先删除内容
+			$(".box").remove(); 
+			loadQuestion(questionFlag,sortFlag,$(this).attr("id"));
+			
+		});
+		
+		
+		
+		
+		
+	},'json');
+	
+	//显示所有标签结束
+	
+	
+	
 });
 
 //参数1：questionType表示问题的类型 '1':技术问答； '2'：面试问题； '3'：即时问答
 //参数2：sortType表示问题排序的类型'1'：最新排序； '2'：尚未回答； '3'：热门
-function loadQuestion(questionType,sortType){
+function loadQuestion(questionType,sortType,labelId){
 	//一个标志位，当为true的时候，才会触发加载事件。
 	//目的：加载完最后一页数据后就不在加载数据了
 	edit=true;
 	//刚加载页面后就显示第一页的数据
 	var cpage = 1;
-	loadData(cpage, 10, questionType,sortType);
+	loadData(cpage, 10, questionType,sortType,labelId);
 	
 	//当页面滚动到底后加载第n页数据
 	
@@ -532,7 +553,7 @@ function loadQuestion(questionType,sortType){
 	        if (scrollTop + windowHeight+20 >= scrollHeight && edit) {
 	        	edit = false;   //保证在20px的范围内，滚动事件只会触发一次
 	        	cpage++;
-	        	loadData(cpage, 10, questionType,sortType);
+	        	loadData(cpage, 10, questionType,sortType,labelId);
 	        
 	        }
 	    }
@@ -541,14 +562,15 @@ function loadQuestion(questionType,sortType){
 
 
 
-function loadData(currentPage, pageSize, questionType, sortType){
+function loadData(currentPage, pageSize, questionType, sortType,labelId){
 	
 	layui.use('layer', function() {
 	var layer = layui.layer;
 	
 	var iiii = layer.load();
 	
-	$.get("<c:url value='/question'></c:url>",{'method':'questionPage','questionType':questionType,'sortType':sortType,'currentPage':currentPage,'pageSize':pageSize},function(result){
+	
+	$.get("<c:url value='/question'></c:url>",{'method':'questionPage','questionType':questionType,'sortType':sortType,'labelId':labelId,'currentPage':currentPage,'pageSize':pageSize},function(result){
 		layer.close(iiii);
 
 		//console.log(result);
@@ -594,7 +616,7 @@ function loadData(currentPage, pageSize, questionType, sortType){
 				//标签
 				//console.log(k.content);
 				
-				var $label = $('<span class="tag">'+k.content+'</span>');
+				var $label = $('<span class="tag" id="'+k.id+'">'+k.content+'</span>');
 				
 				$box2.children('.question_time').append($label);
 				
@@ -605,6 +627,17 @@ function loadData(currentPage, pageSize, questionType, sortType){
 			
 			$("#content").append($box);
 			
+			
+		});
+		
+		
+		//添加点击事件，按照标签进行查找问题
+		$(".tag").css("cursor","pointer");
+		$(".tag").on("click",function(){
+			//console.log($(this).attr("id"));
+			//先删除内容
+			$(".box").remove(); 
+			loadQuestion(questionFlag,sortFlag,$(this).attr("id"));
 			
 		});
 		
@@ -622,6 +655,7 @@ function loadData(currentPage, pageSize, questionType, sortType){
 			
 			edit = true;   //如果不是最后一页和没有数据的话就继续加载数据
 		}
+		
 		
 		
 		
@@ -763,6 +797,7 @@ $(function(){
 </script>
 
 <!-- 首页和我要提问 结束-->
+
 
 
 

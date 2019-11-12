@@ -10,6 +10,7 @@ public interface IQuestionDao {
 	
 	//查询当前页面的问题
 	public List<Question> queryQuestionList(int currentPage, int pageSize, String questionType, String sortType);
+	public List<Question> queryQuestionList(int currentPage, int pageSize, String questionType, String sortType,int labelId);
 	
 	//查询问题对应的用户
 	public User queryUserByUserId(String userid);
@@ -20,6 +21,7 @@ public interface IQuestionDao {
 	
 	//查询问题的总数
 	public int queryQuestionCount(String questionType, String sortType);
+	public int queryQuestionCount(String questionType, String sortType,int labelId);
 
 	//查询所有的标签
 	public List<Label> queryAllLabelDao();
