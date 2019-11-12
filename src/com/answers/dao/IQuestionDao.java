@@ -26,4 +26,17 @@ public interface IQuestionDao {
 	//查询所有的标签
 	public List<Label> queryAllLabelDao();
 	
+	
+	//按照标题模糊查询
+	public List<Question> serchTechnicalTitleDao(int currentPage, int pageSize,String serchVal);
+	public List<Question> serchInterviewTitleDao(int currentPage, int pageSize,String serchVal);
+	public List<Question> serchTaskTitleDao(int currentPage, int pageSize,String serchVal);
+	
+	//查询按照标题模糊查询的总问题数
+	public int serchTechnicalTitleCountDao(String serchVal);
+	public int serchInterviewTitleCountDao(String serchVal);
+	public int serchTaskTitleCountDao(String serchVal);
+	
+	
+	
 }

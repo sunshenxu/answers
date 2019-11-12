@@ -88,4 +88,101 @@ public class QuestionServiceImpl implements IQuestionService{
 		return questionDao.queryAllLabelDao();
 	}
 
+	
+	//按照标题内容模糊查询
+	@Override
+	public Page<QULs> queryQuestionByTitle(int currentPage, int pageSize, String serchVal) {
+		try {
+			//开启事务
+			TransactionUtil.startTransaction();
+			
+			List<QULs> qulsList = new ArrayList<QULs>();
+			
+			List<Question> queryList1 = questionDao.serchTechnicalTitleDao(currentPage, pageSize, serchVal);
+			List<Question> queryList2 = questionDao.serchInterviewTitleDao(currentPage, pageSize, serchVal);
+			List<Question> queryList3 = questionDao.serchTaskTitleDao(currentPage, pageSize, serchVal);
+			
+			
+			int totalCount = 0;
+			int count1 = questionDao.serchInterviewTitleCountDao(serchVal);
+			int count2 = questionDao.serchTaskTitleCountDao(serchVal);
+			int count3 = questionDao.serchTechnicalTitleCountDao(serchVal);
+			
+			totalCount = count1+count2+count3;
+			
+			//循环每一个问题，找到对应问题的用户信息和标签信息
+			for (Question question : queryList1) {
+				String userid = question.getUserid();
+				//查找到对应的用户信息
+				User user = questionDao.queryUserByUserId(userid);
+				
+				String questionId = question.getId();
+				//找到对应问题的标签
+				List<Label> labelList = questionDao.queryLabelByQuestionId(Integer.parseInt(questionId),"1");
+				
+				QULs quls = new QULs();
+				quls.setQuestion(question);
+				quls.setUser(user);
+				quls.setLabelList(labelList);
+				
+				qulsList.add(quls);
+			}
+			//循环每一个问题，找到对应问题的用户信息和标签信息
+			for (Question question : queryList2) {
+				String userid = question.getUserid();
+				//查找到对应的用户信息
+				User user = questionDao.queryUserByUserId(userid);
+				
+				String questionId = question.getId();
+				//找到对应问题的标签
+				List<Label> labelList = questionDao.queryLabelByQuestionId(Integer.parseInt(questionId),"1");
+				
+				QULs quls = new QULs();
+				quls.setQuestion(question);
+				quls.setUser(user);
+				quls.setLabelList(labelList);
+				
+				qulsList.add(quls);
+			}
+			//循环每一个问题，找到对应问题的用户信息和标签信息
+			for (Question question : queryList3) {
+				String userid = question.getUserid();
+				//查找到对应的用户信息
+				User user = questionDao.queryUserByUserId(userid);
+				
+				String questionId = question.getId();
+				//找到对应问题的标签
+				List<Label> labelList = questionDao.queryLabelByQuestionId(Integer.parseInt(questionId),"1");
+				
+				QULs quls = new QULs();
+				quls.setQuestion(question);
+				quls.setUser(user);
+				quls.setLabelList(labelList);
+				
+				qulsList.add(quls);
+			}
+			
+			
+			Page<QULs> page = new Page<QULs>();
+			
+			page.setCurrentPage(currentPage);
+			page.setPageList(qulsList);
+			page.setTotalCount(totalCount);
+			page.setPageSize(pageSize);
+			
+			
+			//提交事务
+			TransactionUtil.commitTransaction();
+			return page;
+			
+		}catch(Exception e) {
+			TransactionUtil.rollbackTransaction();
+		}finally {
+			TransactionUtil.close();
+		}
+		
+		
+		return null;
+	}
+
 }

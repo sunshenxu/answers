@@ -44,6 +44,8 @@ public class QuestionServlet extends BaseServlet{
 		return "";
 	}
 	
+	
+	
 	//查询所有的标签
 	public String labelList(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
@@ -54,5 +56,26 @@ public class QuestionServlet extends BaseServlet{
 		
 		return "";
 	}
+	
+	//按照标题模糊查询
+	public String serchQuestionPage(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		
+		String currentPage = request.getParameter("currentPage");
+		String pageSize = request.getParameter("pageSize");
+		String serchVal = request.getParameter("title");
+		
+		Page<QULs> page = questionService.queryQuestionByTitle(Integer.parseInt(currentPage), Integer.parseInt(pageSize), serchVal);
+				
+				
+				
+		JSONObject json = JSONObject.fromObject(page);
+		
+		//System.out.println(fromObject);
+		
+		response.getWriter().print(json);
+		
+		return "";
+	}
+	
 	
 }

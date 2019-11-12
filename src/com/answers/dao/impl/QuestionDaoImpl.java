@@ -79,8 +79,6 @@ public class QuestionDaoImpl implements IQuestionDao{
 
 	
 	
-	
-	
 	//查询当前页面的问题，带标签查询
 	@Override
 	public List<Question> queryQuestionList(int currentPage, int pageSize, String questionType, String sortType,int labelId) {
@@ -126,13 +124,6 @@ public class QuestionDaoImpl implements IQuestionDao{
 		
 		return null;
 	}
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	
@@ -233,48 +224,48 @@ public class QuestionDaoImpl implements IQuestionDao{
 	
 	
 	//查询问题的总数，有标签
-		@Override
-		public int queryQuestionCount(String questionType, String sortType,int labelId) {
-			Connection connection = TransactionUtil.getConnection();
-			QueryRunner runner = new QueryRunner();
-			
-			String sql = "";
-			
-			if("1".equals(questionType)) {
-				if("2".equals(sortType)) {
-					sql = "SELECT COUNT(1) FROM technical AS a INNER JOIN technicalflag AS b ON a.answercount=0 AND a.id=b.technicalid AND b.labelid=?";
-				}else {
-					sql = "SELECT COUNT(1) FROM technical AS a INNER JOIN technicalflag AS b ON a.id=b.technicalid AND b.labelid=?";
-				}
-			}else if("2".equals(questionType)) {
-				if("2".equals(sortType)) {
-					sql = "SELECT COUNT(1) FROM interview AS a INNER JOIN interviewflag AS b ON a.answercount=0 AND a.id=b.interviewid AND b.labelid=?";
-				}else {
-					sql = "SELECT COUNT(1) FROM interview AS a INNER JOIN interviewflag AS b ON a.id=b.interviewid AND b.labelid=?";
-				}
-				
-			}else if("3".equals(questionType)) {
-				if("2".equals(sortType)) {
-					sql = "SELECT COUNT(1) FROM task AS a INNER JOIN taskflag AS b ON a.answercount=0 AND a.id=b.taskid AND b.labelid=?";
-				}else {
-					sql = "SELECT COUNT(1) FROM task AS a INNER JOIN taskflag AS b ON a.id=b.taskid AND b.labelid=?";
-				}
-				
+	@Override
+	public int queryQuestionCount(String questionType, String sortType,int labelId) {
+		Connection connection = TransactionUtil.getConnection();
+		QueryRunner runner = new QueryRunner();
+		
+		String sql = "";
+		
+		if("1".equals(questionType)) {
+			if("2".equals(sortType)) {
+				sql = "SELECT COUNT(1) FROM technical AS a INNER JOIN technicalflag AS b ON a.answercount=0 AND a.id=b.technicalid AND b.labelid=?";
+			}else {
+				sql = "SELECT COUNT(1) FROM technical AS a INNER JOIN technicalflag AS b ON a.id=b.technicalid AND b.labelid=?";
+			}
+		}else if("2".equals(questionType)) {
+			if("2".equals(sortType)) {
+				sql = "SELECT COUNT(1) FROM interview AS a INNER JOIN interviewflag AS b ON a.answercount=0 AND a.id=b.interviewid AND b.labelid=?";
+			}else {
+				sql = "SELECT COUNT(1) FROM interview AS a INNER JOIN interviewflag AS b ON a.id=b.interviewid AND b.labelid=?";
 			}
 			
-			try {
-				Object[] obj = runner.query(connection, sql, new ArrayHandler(),labelId);
-				
-				int count = Integer.parseInt(obj[0].toString());
-				
-				return count;
-			} catch (SQLException e) {
-				e.printStackTrace();
+		}else if("3".equals(questionType)) {
+			if("2".equals(sortType)) {
+				sql = "SELECT COUNT(1) FROM task AS a INNER JOIN taskflag AS b ON a.answercount=0 AND a.id=b.taskid AND b.labelid=?";
+			}else {
+				sql = "SELECT COUNT(1) FROM task AS a INNER JOIN taskflag AS b ON a.id=b.taskid AND b.labelid=?";
 			}
 			
-			
-			return 0;
 		}
+		
+		try {
+			Object[] obj = runner.query(connection, sql, new ArrayHandler(),labelId);
+			
+			int count = Integer.parseInt(obj[0].toString());
+			
+			return count;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		
+		return 0;
+	}
 
 	
 
@@ -297,8 +288,125 @@ public class QuestionDaoImpl implements IQuestionDao{
 		
 		return null;
 	}
+
+
+
+
+	//按照technical表中的标题模糊查询
+	@Override
+	public List<Question> serchTechnicalTitleDao(int currentPage, int pageSize,String serchVal) {
+		Connection connection = TransactionUtil.getConnection();
+		QueryRunner runner = new QueryRunner();
+		String sql = "SELECT * FROM technical WHERE title LIKE ? LIMIT ?,?";
+		
+		try {
+			
+			List<Question> questionList = runner.query(connection, sql, new BeanListHandler<Question>(Question.class), "%"+serchVal+"%",(currentPage-1)*pageSize,pageSize);
+			return questionList;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+
+	
+	//按照interview表中的标题模糊查询
+	@Override
+	public List<Question> serchInterviewTitleDao(int currentPage, int pageSize,String serchVal) {
+		Connection connection = TransactionUtil.getConnection();
+		QueryRunner runner = new QueryRunner();
+		String sql = "SELECT * FROM interview WHERE title LIKE ? LIMIT ?,?";
+		
+		try {
+			List<Question> questionList = runner.query(connection, sql, new BeanListHandler<Question>(Question.class), "%"+serchVal+"%",(currentPage-1)*pageSize,pageSize);
+			return questionList;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	//按照task表中的标题模糊查询
+	@Override
+	public List<Question> serchTaskTitleDao(int currentPage, int pageSize,String serchVal) {
+		Connection connection = TransactionUtil.getConnection();
+		QueryRunner runner = new QueryRunner();
+		String sql = "SELECT * FROM task WHERE title LIKE ? LIMIT ?,?";
+		
+		try {
+			List<Question> questionList = runner.query(connection, sql, new BeanListHandler<Question>(Question.class), "%"+serchVal+"%",(currentPage-1)*pageSize,pageSize);
+			return questionList;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
 	
 	
+
+	//查询technical按照标题模糊查询的总问题数
+	@Override
+	public int serchTechnicalTitleCountDao(String serchVal) {
+		Connection connection = TransactionUtil.getConnection();
+		QueryRunner runner = new QueryRunner();
+		String sql = "SELECT count(1) FROM technical WHERE title LIKE ?";
+		
+		try {
+			Object[] obj = runner.query(connection, sql, new ArrayHandler(),"%"+serchVal+"%");
+			
+			int count = Integer.parseInt(obj[0].toString());
+			
+			return count;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return 0;
+	}
+	
+	//查询interview按照标题模糊查询的总问题数
+	@Override
+	public int serchInterviewTitleCountDao(String serchVal) {
+		Connection connection = TransactionUtil.getConnection();
+		QueryRunner runner = new QueryRunner();
+		String sql = "SELECT count(1) FROM interview WHERE title LIKE ?";
+		
+		try {
+			Object[] obj = runner.query(connection, sql, new ArrayHandler(),"%"+serchVal+"%");
+			
+			int count = Integer.parseInt(obj[0].toString());
+			
+			return count;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return 0;
+	}
+		
+		
+	//查询task按照标题模糊查询的总问题数
+	@Override
+	public int serchTaskTitleCountDao(String serchVal) {
+		Connection connection = TransactionUtil.getConnection();
+		QueryRunner runner = new QueryRunner();
+		String sql = "SELECT count(1) FROM task WHERE title LIKE ?";
+		
+		try {
+			Object[] obj = runner.query(connection, sql, new ArrayHandler(),"%"+serchVal+"%");
+			
+			int count = Integer.parseInt(obj[0].toString());
+			
+			return count;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return 0;
+	}
 	
 	
 	

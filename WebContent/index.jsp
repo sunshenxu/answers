@@ -67,7 +67,7 @@
 				<a href="javascript:void(0);">我要提问</a>
 			</div>
 			<div id="rightquestion">
-				<input type="text" placeholder="请输入问题标题进行查询" /> <a href="#"><img
+				<input type="text" placeholder="请输入问题标题进行查询" /> <a href="javascript:void(0);"><img
 					src="img/ic_search.svg" /></a>
 			</div>
 		</div>
@@ -526,11 +526,93 @@ $(function(){
 	//显示所有标签结束
 	
 	
+	//给搜索框添加回车事件
+	$("#rightquestion input").on('keypress',function(event){
+		if(event.keyCode == "13"){
+			serchQuestion();
+			
+	    }
+		
+	});
+	
+	
+	//添加点击搜索按钮模糊查询事件
+	$("#rightquestion a").on('click',function(){
+		serchQuestion();
+	});
+	
+	
+	function serchQuestion(){
+		$(".box").remove();
+        //alert('你输入的内容为：' + $('#rightquestion input').val());
+        var $serchVal = $('#rightquestion input').val();
+       
+        var cpage = 1;
+        serchload(cpage,10,$serchVal);
+        
+        
+      	$(window).off("scroll");   //先清除原本页面的滚动事件
+        $(window).scroll(
+    	    function () {
+    	        var scrollTop = $(this).scrollTop();
+    	        var scrollHeight = $(document).height();
+    	        var windowHeight = $(this).height();
+    	        
+    	        if (scrollTop + windowHeight+20 >= scrollHeight && edit) {
+    	        	edit = false;   //保证在20px的范围内，滚动事件只会触发一次
+    	        	cpage++;
+    	        	serchload(cpage,10,$serchVal);
+    	        
+    	        }
+    	    }
+        );
+	}
+	
+	
 	
 });
 
+function serchload(currentPage,pageSize,$serchVal){
+	layui.use('layer', function() {
+		var layer = layui.layer;
+		
+		var iiii = layer.load();
+	 $.get("<c:url value='/question'></c:url>",{'method':'serchQuestionPage','title':$serchVal,'currentPage':currentPage,'pageSize':pageSize},function(result){
+		layer.close(iiii);
+		
+     	createQuestion(result);
+     	
+ 		//当是最后一页，或者页面没有数据的时候，取消滚动事件
+ 		if(currentPage == result.totalPage){
+ 			layer.msg("已经是最后一页啦",{time:1000});  //最后一页的话就不在加载数据了
+ 			$(window).off("scroll");  //取消滚动事件
+ 		}else if(result.totalPage == 0){
+ 			layer.msg("暂时还没有问题，快去提问吧！",{time:1000}); //没有数据也不在加载数据
+ 			$(window).off("scroll");  //取消滚动事件
+ 		}else{
+ 			
+ 			edit = true;   //如果不是最后一页和没有数据的话就继续加载数据
+ 		}
+ 		
+ 		<!-- 未登录点击链接会跳转到登录界面开始 -->
+ 		//console.log($('.question_title a'));
+ 		$('.question_title a').on('click',function(){
+ 			
+ 			isLog("<c:url value='/questiondetail.jsp'></c:url>");
+ 			
+ 		});
+ 		<!-- 未登录点击链接会跳转到登录界面结束 -->
+     	
+     },'json');
+	});
+}
+
+
+
+
 //参数1：questionType表示问题的类型 '1':技术问答； '2'：面试问题； '3'：即时问答
 //参数2：sortType表示问题排序的类型'1'：最新排序； '2'：尚未回答； '3'：热门
+//参数3：-1表示不带标签查询，不是-1就表示带标签查询
 function loadQuestion(questionType,sortType,labelId){
 	//一个标志位，当为true的时候，才会触发加载事件。
 	//目的：加载完最后一页数据后就不在加载数据了
@@ -542,8 +624,7 @@ function loadQuestion(questionType,sortType,labelId){
 	//当页面滚动到底后加载第n页数据
 	
 	
-	
-	//$(window).off("scroll");   //先清除原来的滚动事件
+	$(window).off("scroll");   //先清除原来的滚动事件
     $(window).scroll(
 	    function () {
 	        var scrollTop = $(this).scrollTop();
@@ -569,79 +650,12 @@ function loadData(currentPage, pageSize, questionType, sortType,labelId){
 	
 	var iiii = layer.load();
 	
-	
 	$.get("<c:url value='/question'></c:url>",{'method':'questionPage','questionType':questionType,'sortType':sortType,'labelId':labelId,'currentPage':currentPage,'pageSize':pageSize},function(result){
 		layer.close(iiii);
 
 		//console.log(result);
 		
-		$.each(result.pageList,function(k,v){
-			//投票数
-			var $votecount = v.question.votecount;
-			//回答数
-			var $answercount = v.question.answercount;
-			//浏览数
-			var $browsecount = v.question.browsecount;
-			//标题
-			var $title = v.question.title;
-			//发布人
-			var $name = v.user.name;
-			//发布时间
-			var $time = v.question.releasetime.time;
-			
-			var time = new Date($time);//毫秒转日期格式
-		 
-		    //调用
-		    //var $date = time.toMyDateString();
-		    var $date = time.Format("yyyy-MM-dd HH:mm:ss");
-			//console.log($date);
-			
-			//给页面添加元素
-			var $box = $('<section class="box"></section>');
-			
-			var $box1 = $('<div class="box-f1"><ul><li>'+$votecount+' <span>投票</span></li><li style="border: 1px solid #4eaa4c; color: #4eaa4c;">'+$answercount+' <span>回答</span></li><li>'+$browsecount+' <span>浏览</span></li></ul></div>');
-			
-			var $box2 = $('<div class="box-f2"><div class="question_title"><a href="javascript:void(0);">'+$title+'</a></div><div class="question_time"><span> 发布人：'+$name+'@ '+$date+'</span></div></div>');
-			
-			
-			var $box3 = $('<div class="box-f3"><img src="img/header2.jpg" /></div>');
-			
-			
-			
-			$box.append($box1);
-			$box.append($box2);
-			$box.append($box3);
-			
-			$.each(v.labelList,function(j,k){
-				//标签
-				//console.log(k.content);
-				
-				var $label = $('<span class="tag" id="'+k.id+'">'+k.content+'</span>');
-				
-				$box2.children('.question_time').append($label);
-				
-			});
-			
-			//问题的内容
-			//console.log(v.question.content);
-			
-			$("#content").append($box);
-			
-			
-		});
-		
-		
-		//添加点击事件，按照标签进行查找问题
-		$(".tag").css("cursor","pointer");
-		$(".tag").on("click",function(){
-			//console.log($(this).attr("id"));
-			//先删除内容
-			$(".box").remove(); 
-			loadQuestion(questionFlag,sortFlag,$(this).attr("id"));
-			
-		});
-		
-		
+		createQuestion(result);
 		
 		//当是最后一页，或者页面没有数据的时候，取消滚动事件
 		
@@ -656,76 +670,122 @@ function loadData(currentPage, pageSize, questionType, sortType,labelId){
 			edit = true;   //如果不是最后一页和没有数据的话就继续加载数据
 		}
 		
-		
-		
-		
 		<!-- 未登录点击链接会跳转到登录界面开始 -->
-		
 		//console.log($('.question_title a'));
 		$('.question_title a').on('click',function(){
 			
 			isLog("<c:url value='/questiondetail.jsp'></c:url>");
 			
 		});
-
-		
-		
 		<!-- 未登录点击链接会跳转到登录界面结束 -->
 		
-		
-		
 	},"json");
-	
-	
-	
-	//时间转换:毫秒类型转成2017-1-2 12:20
-    Date.prototype.toMyDateString = function() {
-        return this.getFullYear() + "-" + (this.getMonth() + 1) + "-" + this.getDate() + " " + this.getHours() + ":" + this.getMinutes()+ ":" +this.getSeconds();
-    }
-	
-  	 //---------------------------------------------------
-	 // 日期格式化
-	 // 格式 YYYY/yyyy/YY/yy 表示年份
-	 // MM/M 月份
-	 // W/w 星期
-	 // dd/DD/d/D 日期
-	 // hh/HH/h/H 时间
-	 // mm/m 分钟
-	 // ss/SS/s/S 秒
-	 //---------------------------------------------------
-	 Date.prototype.Format = function(formatStr){
-		 var str = formatStr;
-		 var Week = ['日','一','二','三','四','五','六'];
-		
-		 str=str.replace(/yyyy|YYYY/,this.getFullYear());
-		 str=str.replace(/yy|YY/,(this.getYear() % 100)>9?(this.getYear() % 100).toString():'0' + (this.getYear() % 100));
-		
-		 str=str.replace(/MM/,this.getMonth()>9?this.getMonth().toString():'0' + this.getMonth());
-		 str=str.replace(/M/g,this.getMonth());
-		
-		 str=str.replace(/w|W/g,Week[this.getDay()]);
-		
-		 str=str.replace(/dd|DD/,this.getDate()>9?this.getDate().toString():'0' + this.getDate());
-		 str=str.replace(/d|D/g,this.getDate());
-		
-		 str=str.replace(/hh|HH/,this.getHours()>9?this.getHours().toString():'0' + this.getHours());
-		 str=str.replace(/h|H/g,this.getHours());
-		 str=str.replace(/mm/,this.getMinutes()>9?this.getMinutes().toString():'0' + this.getMinutes());
-		 str=str.replace(/m/g,this.getMinutes());
-		
-		 str=str.replace(/ss|SS/,this.getSeconds()>9?this.getSeconds().toString():'0' + this.getSeconds());
-		 str=str.replace(/s|S/g,this.getSeconds());
-		
-		 return str;
-	 }
-
-	
-	
-	
 	
 	});
 	
 }
+
+
+//根据json数据动态的生产问题列表
+function createQuestion(result){
+	$.each(result.pageList,function(k,v){
+		//投票数
+		var $votecount = v.question.votecount;
+		//回答数
+		var $answercount = v.question.answercount;
+		//浏览数
+		var $browsecount = v.question.browsecount;
+		//标题
+		var $title = v.question.title;
+		//发布人
+		var $name = v.user.name;
+		//发布时间
+		var $time = v.question.releasetime.time;
+		
+		var time = new Date($time);//毫秒转日期格式
+	 
+	    //调用
+	    //var $date = time.toMyDateString();
+	    var $date = time.Format("yyyy-MM-dd HH:mm:ss");
+		//console.log($date);
+		
+		//给页面添加元素
+		var $box = $('<section class="box"></section>');
+		
+		var $box1 = $('<div class="box-f1"><ul><li>'+$votecount+' <span>投票</span></li><li style="border: 1px solid #4eaa4c; color: #4eaa4c;">'+$answercount+' <span>回答</span></li><li>'+$browsecount+' <span>浏览</span></li></ul></div>');
+		
+		var $box2 = $('<div class="box-f2"><div class="question_title"><a href="javascript:void(0);">'+$title+'</a></div><div class="question_time"><span> 发布人：'+$name+'@ '+$date+'</span></div></div>');
+		
+		
+		var $box3 = $('<div class="box-f3"><img src="img/header2.jpg" /></div>');
+		
+		$box.append($box1);
+		$box.append($box2);
+		$box.append($box3);
+		
+		$.each(v.labelList,function(j,k){
+			//标签
+			//console.log(k.content);
+			
+			var $label = $('<span class="tag" id="'+k.id+'">'+k.content+'</span>');
+			
+			$box2.children('.question_time').append($label);
+			
+		});
+		
+		//问题的内容
+		//console.log(v.question.content);
+		
+		$("#content").append($box);
+		
+		
+	});
+}
+
+
+
+//时间转换:毫秒类型转成2017-1-2 12:20
+Date.prototype.toMyDateString = function() {
+    return this.getFullYear() + "-" + (this.getMonth() + 1) + "-" + this.getDate() + " " + this.getHours() + ":" + this.getMinutes()+ ":" +this.getSeconds();
+}
+
+	 //---------------------------------------------------
+ // 日期格式化
+ // 格式 YYYY/yyyy/YY/yy 表示年份
+ // MM/M 月份
+ // W/w 星期
+ // dd/DD/d/D 日期
+ // hh/HH/h/H 时间
+ // mm/m 分钟
+ // ss/SS/s/S 秒
+ //---------------------------------------------------
+ Date.prototype.Format = function(formatStr){
+	 var str = formatStr;
+	 var Week = ['日','一','二','三','四','五','六'];
+	
+	 str=str.replace(/yyyy|YYYY/,this.getFullYear());
+	 str=str.replace(/yy|YY/,(this.getYear() % 100)>9?(this.getYear() % 100).toString():'0' + (this.getYear() % 100));
+	
+	 str=str.replace(/MM/,this.getMonth()>9?this.getMonth().toString():'0' + this.getMonth());
+	 str=str.replace(/M/g,this.getMonth());
+	
+	 str=str.replace(/w|W/g,Week[this.getDay()]);
+	
+	 str=str.replace(/dd|DD/,this.getDate()>9?this.getDate().toString():'0' + this.getDate());
+	 str=str.replace(/d|D/g,this.getDate());
+	
+	 str=str.replace(/hh|HH/,this.getHours()>9?this.getHours().toString():'0' + this.getHours());
+	 str=str.replace(/h|H/g,this.getHours());
+	 str=str.replace(/mm/,this.getMinutes()>9?this.getMinutes().toString():'0' + this.getMinutes());
+	 str=str.replace(/m/g,this.getMinutes());
+	
+	 str=str.replace(/ss|SS/,this.getSeconds()>9?this.getSeconds().toString():'0' + this.getSeconds());
+	 str=str.replace(/s|S/g,this.getSeconds());
+	
+	 return str;
+ }
+
+
 
 //如果没有登录就跳转到登录界面，登录了就跳转到指定的url的页面
 function isLog(url){
@@ -751,6 +811,9 @@ function isLog(url){
 		window.location.href=url;
 	}
 }
+
+
+
 
 
 </script>

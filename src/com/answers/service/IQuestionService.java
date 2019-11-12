@@ -14,4 +14,8 @@ public interface IQuestionService {
 
 	//查询所有的标签
 	public List<Label> queryAllLabelService();
+	
+	//按照标题内容模糊查询
+	public Page<QULs> queryQuestionByTitle(int currentPage, int pageSize, String serchVal);
+
 }
