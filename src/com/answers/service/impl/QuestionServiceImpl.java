@@ -51,9 +51,9 @@ public class QuestionServiceImpl implements IQuestionService{
 				//查找到对应的用户信息
 				User user = questionDao.queryUserByUserId(userid);
 				
-				String questionId = question.getId();
+				int questionId = question.getId();
 				//找到对应问题的标签
-				List<Label> labelList = questionDao.queryLabelByQuestionId(Integer.parseInt(questionId),questionType);
+				List<Label> labelList = questionDao.queryLabelByQuestionId(questionId,questionType);
 				
 				QULs quls = new QULs();
 				quls.setQuestion(question);
@@ -119,9 +119,9 @@ public class QuestionServiceImpl implements IQuestionService{
 				//查找到对应的用户信息
 				User user = questionDao.queryUserByUserId(userid);
 				
-				String questionId = question.getId();
+				int questionId = question.getId();
 				//找到对应问题的标签
-				List<Label> labelList = questionDao.queryLabelByQuestionId(Integer.parseInt(questionId),"1");
+				List<Label> labelList = questionDao.queryLabelByQuestionId(questionId,"1");
 				
 				QULs quls = new QULs();
 				quls.setQuestion(question);
@@ -136,9 +136,9 @@ public class QuestionServiceImpl implements IQuestionService{
 				//查找到对应的用户信息
 				User user = questionDao.queryUserByUserId(userid);
 				
-				String questionId = question.getId();
+				int questionId = question.getId();
 				//找到对应问题的标签
-				List<Label> labelList = questionDao.queryLabelByQuestionId(Integer.parseInt(questionId),"1");
+				List<Label> labelList = questionDao.queryLabelByQuestionId(questionId,"1");
 				
 				QULs quls = new QULs();
 				quls.setQuestion(question);
@@ -153,9 +153,9 @@ public class QuestionServiceImpl implements IQuestionService{
 				//查找到对应的用户信息
 				User user = questionDao.queryUserByUserId(userid);
 				
-				String questionId = question.getId();
+				int questionId = question.getId();
 				//找到对应问题的标签
-				List<Label> labelList = questionDao.queryLabelByQuestionId(Integer.parseInt(questionId),"1");
+				List<Label> labelList = questionDao.queryLabelByQuestionId(questionId,"1");
 				
 				QULs quls = new QULs();
 				quls.setQuestion(question);

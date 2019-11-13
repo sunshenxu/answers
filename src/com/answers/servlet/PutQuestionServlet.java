@@ -22,6 +22,7 @@ public class PutQuestionServlet extends BaseServlet{
 	
 	private IPutQuestionService putQuestionService = new PutQuestionServiceImpl();
 	
+	
 	public String islog(HttpServletRequest request, HttpServletResponse response) {
 		
 		//request.getSession(false)==null),适用于session过期，且只有第一次创建session时有效

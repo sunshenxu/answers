@@ -17,7 +17,7 @@ public class EncodingFilter implements Filter {
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		HttpServletRequest req =(HttpServletRequest)request;
 		//不能写response.setContentType("text/html;charset=utf-8");，会把所有的css、js等给设置为html
-		response.setCharacterEncoding("utf-8");  
+		response.setCharacterEncoding("utf-8");
 		String method = req.getMethod();
 		
 		if("GET".equals(method)) {

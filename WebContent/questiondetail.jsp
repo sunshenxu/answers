@@ -150,7 +150,7 @@
 						</div>
 						
 						<div>
-							<section class="answer_list">
+						<section class="answer_list">
 							
 								<!-- 回答内容 -->
 								
@@ -199,15 +199,18 @@
 							</section>
 							
 						</div>
+						 
+						 
+						 
+						<div id="demo7"></div>
+						
+						
 					</div>
 				</section>
 			</div>
-			<aside>
+			<aside id="tagList">
 				<h4>所有标签：</h4>
-				<div class="tag">java</div>
-				<div class="tag">mysql</div>
-				<div class="tag">oracle</div>
-				<div class="tag">struts</div>
+			
 			</aside>
 		</section>
 
@@ -272,6 +275,38 @@ $(function(){
 
 <script type="text/javascript">
 $(function(){
+	//显示所有标签开始
+	$.get("<c:url value='/question'></c:url>",{'method':'labelList'},function(result){
+		//返回所有的标签的集合
+		//console.log(result);
+		$.each(result,function(k,v){
+			//动态生成标签节点
+			var $tag = $('<div class="tag" id="'+v.id+'">'+v.content+'</div>');
+			$("#tagList").append($tag);
+			
+		});
+		
+		//添加点击事件，按照标签进行查找问题
+		$(".tag").css("cursor","pointer");
+		$(".tag").on("click",function(){
+			//console.log($(this).attr("id"));
+			//先删除内容
+			$(".box").remove(); 
+			loadQuestion(questionFlag,sortFlag,$(this).attr("id"));
+			
+		});
+		
+		
+		
+		
+		
+	},'json');
+	
+	//显示所有标签结束
+	
+	
+	
+	
 	//回答问题
 	$("#answersubbtn").on('click',function(){
 		var huidaContent = CKEDITOR.instances.editor.getData();
@@ -326,8 +361,34 @@ $(function(){
 	}
 	
 	
-	//分页
 	
+	//分页
+	layui.use(['laypage', 'layer'], function(){
+		var laypage = layui.laypage;
+		var layer = layui.layer;
+		
+		var total = ${sessionScope.qu.question.answercount };
+		var cpage = ${sessionScope.pageAnswer.currentPage};
+		var psize = ${sessionScope.pageAnswer.pageSize};
+		//完整功能
+		laypage.render({
+		  elem: 'demo7'
+		  ,count: total
+		  ,layout: ['count', 'prev', 'page', 'next', 'limit', 'refresh', 'skip']
+		  ,curr: cpage
+		  ,limit:psize
+		  ,limits:[5,10,15,20]
+		  ,jump: function(obj,first){
+			  if(first!=true){//是否首次进入页面
+				var currentPage = obj.curr;//获取点击的页码	
+				var pageSize = obj.limit;  //获取页面的大小
+				window.location.href = "<c:url value='/answerquestion?method=islog&qid="+${sessionScope.qu.question.id}+"&type="+${requestScope.type }+"&cpage="+currentPage+"&size="+pageSize+"&sortType="+${sessionScope.sortType}+"'></c:url>";
+			  }
+			  
+		  }
+		});
+	
+	});
 	
 	
 	
@@ -336,8 +397,9 @@ $(function(){
 
 
 </script>
-		
-		
+
+
+
 		
 </body>
 

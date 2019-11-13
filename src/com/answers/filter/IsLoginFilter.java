@@ -23,10 +23,27 @@ public class IsLoginFilter implements Filter {
 
 		HttpSession session = req.getSession();
 		if (session.getAttribute("user") == null) {
+			//没有用户登录
+			request.setAttribute("sf", "false");
+			req.getRequestDispatcher("/index.jsp").forward(req, res);
 			res.sendRedirect(req.getContextPath() + "/login.jsp");
 		} else {
+			//有用户登录
 			chain.doFilter(request, response);
+			
 		}
+		
+		
+		/*if(session.getAttribute("user")==null){
+			 
+			
+			
+		}else{  
+			
+			request.setAttribute("sf", "true");
+			return "forward:/ask.jsp";
+		} */ 
+		
 	}
 
 	public void init(FilterConfig fConfig) throws ServletException {
