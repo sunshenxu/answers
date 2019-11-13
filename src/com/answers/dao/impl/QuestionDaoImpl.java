@@ -407,6 +407,44 @@ public class QuestionDaoImpl implements IQuestionDao{
 		
 		return 0;
 	}
+
+
+	//根据问题的id查询对应的问题
+	@Override
+	public Question queryQuestionByIdDao(int questionId, String sql) {
+		Connection connection = TransactionUtil.getConnection();
+		QueryRunner runner = new QueryRunner();
+		
+		try {
+			Question question = runner.query(connection, sql, new BeanHandler<Question>(Question.class), questionId);
+			
+			return question;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		
+		return null;
+	}
+
+
+	//修改问题的回答数
+	@Override
+	public int updateAnswercountDao(String sql,int num,int questionId) {
+		Connection conn = TransactionUtil.getConnection();
+		QueryRunner runner = new QueryRunner();
+		
+		try {
+			int count = runner.update(conn, sql,num,questionId);
+			return count;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		
+		return 0;
+	}
 	
 	
 	

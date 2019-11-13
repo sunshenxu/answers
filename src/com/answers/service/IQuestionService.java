@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.answers.entity.Label;
 import com.answers.entity.Page;
+import com.answers.entity.QU;
 import com.answers.entity.QULs;
 
 public interface IQuestionService {
@@ -18,4 +19,6 @@ public interface IQuestionService {
 	//按照标题内容模糊查询
 	public Page<QULs> queryQuestionByTitle(int currentPage, int pageSize, String serchVal);
 
+	//根据问题id获取问题的内容和用户
+	public QU queryQuestionByQuestionID(int questionId, String type);
 }

@@ -38,5 +38,11 @@ public interface IQuestionDao {
 	public int serchTaskTitleCountDao(String serchVal);
 	
 	
+	//根据问题的id查询对应的问题
+	public Question queryQuestionByIdDao(int questionId,String sql);
+	
+	
+	//修改问题的回答数
+	public int updateAnswercountDao(String sql,int num,int questionId);
 	
 }

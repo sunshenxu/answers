@@ -52,7 +52,7 @@
 			<div id="headerbar">
 				<ul id="navigation">
 					<li>
-						<a href="javascript:void(0)">首页</a>
+						<a href="javascript:void(0);">首页</a>
 					</li>
 					<!-- <li>
 						<a href="#">问答</a>
@@ -80,7 +80,7 @@
 				</div>
 				<div id="rightquestion">
 					<input type="text" placeholder="请输入查询关键字" />
-					<a href="#"><img src="img/ic_search.svg" /></a>
+					<a href="javascript:void(0);"><img src="img/ic_search.svg" /></a>
 				</div>
 			</div>
 		</section>
@@ -232,7 +232,7 @@
 		
 		
 
-		<!--注册div开始-->
+<!--注册div开始-->
 <div id="register" style="display:none">
 	<form class="layui-form" action="" lay-filter="regisForm">
 		<div class="layui-form-item">
@@ -580,7 +580,7 @@ $(function(){
 
 
 
-<!--  -->
+<!-- 问题提交 -->
 <script type="text/javascript">
 $(function(){
 	layui.use('layer', function() {

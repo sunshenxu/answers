@@ -6,8 +6,11 @@ import java.util.List;
 
 import com.answers.dao.IQuestionDao;
 import com.answers.dao.impl.QuestionDaoImpl;
+import com.answers.entity.AUs;
+import com.answers.entity.Huida;
 import com.answers.entity.Label;
 import com.answers.entity.Page;
+import com.answers.entity.QU;
 import com.answers.entity.QULs;
 import com.answers.entity.Question;
 import com.answers.entity.User;
@@ -181,6 +184,50 @@ public class QuestionServiceImpl implements IQuestionService{
 			TransactionUtil.close();
 		}
 		
+		
+		return null;
+	}
+
+
+	
+	//根据问题id获取问题的内容和用户
+	@Override
+	public QU queryQuestionByQuestionID(int questionId, String type) {
+		try {
+			//开启事务
+			TransactionUtil.startTransaction();
+			String sql = "";
+			if("1".equals(type)) {
+				sql = "select * from technical where id = ?";
+				
+			}else if("2".equals(type)) {
+				sql = "select * from interview where id = ?";
+				
+			}else if("3".equals(type)) {
+				sql = "select * from task where id = ?";
+			}
+			
+			Question question = questionDao.queryQuestionByIdDao(questionId, sql);
+			
+			String userid = question.getUserid();
+			
+			User user = questionDao.queryUserByUserId(userid);
+			
+			QU qu = new QU();
+			qu.setQuestion(question);
+			qu.setUser(user);
+			
+			
+			//提交事务
+			TransactionUtil.commitTransaction();
+			return qu;
+			
+			
+		}catch(Exception e) {
+			TransactionUtil.rollbackTransaction();
+		}finally {
+			TransactionUtil.close();
+		}
 		
 		return null;
 	}

@@ -243,27 +243,26 @@
 
 <!--登录div开始-->
 <div class="loginregister" id="login">
-		<div>
-			<form>
-				<div class="input_box">
-					<input name="userInfo.account" maxlength="15" class="input_cont"
-						type="text" placeholder="手机号" value="${cookie.userId.value }"/>
-				</div>
-				<div class="input_password">
-					<input type="password" maxlength="15" class="input_cont"
-						placeholder="密码 " name="passwd" value="${cookie.userPwd.value }"/>
-				</div>
-				<div class="input_checkbox">
-					<input type="checkbox" style="display: none" id="remember" /><label
-						class="checkbox" for="remember">记住密码</label>
-				</div>
-				<div class="btn">
-					<input id="logbtn" class="btn" value="登录" type="button"/>
-				</div>
-			</form>
-		</div>
-		<!-- <div class="msg">Xxxxxxxx</div> -->
+	<div>
+		<form>
+			<div class="input_box">
+				<input name="userInfo.account" maxlength="15" class="input_cont"
+					type="text" placeholder="手机号" value="${cookie.userId.value }"/>
+			</div>
+			<div class="input_password">
+				<input type="password" maxlength="15" class="input_cont"
+					placeholder="密码 " name="passwd" value="${cookie.userPwd.value }"/>
+			</div>
+			<div class="input_checkbox">
+				<input type="checkbox" style="display: none" id="remember" /><label
+					class="checkbox" for="remember">记住密码</label>
+			</div>
+			<div class="btn">
+				<input id="logbtn" class="btn" value="登录" type="button"/>
+			</div>
+		</form>
 	</div>
+</div>
 	
 
 
@@ -577,267 +576,253 @@ $(function(){
 	}
 	
 	
+	//根据json数据动态的生成问题列表
+	function createQuestion(result){
+		$.each(result.pageList,function(k,v){
+			//问题的id
+			var $questionId = v.question.id;
+			
+			//投票数
+			var $votecount = v.question.votecount;
+			//回答数
+			var $answercount = v.question.answercount;
+			//浏览数
+			var $browsecount = v.question.browsecount;
+			//标题
+			var $title = v.question.title;
+			//发布人
+			var $name = v.user.name;
+			//发布时间
+			var $time = v.question.releasetime.time;
+			
+			var time = new Date($time);//毫秒转日期格式
+		 
+		    //调用
+		    //var $date = time.toMyDateString();
+		    var $date = time.Format("yyyy-MM-dd HH:mm:ss");
+			//console.log($date);
+			
+			//给页面添加元素
+			var $box = $('<section class="box"></section>');
+			
+			var $box1 = $('<div class="box-f1"><ul><li>'+$votecount+' <span>投票</span></li><li style="border: 1px solid #4eaa4c; color: #4eaa4c;">'+$answercount+' <span>回答</span></li><li>'+$browsecount+' <span>浏览</span></li></ul></div>');
+			
+			var $box2 = $('<div class="box-f2"><div class="question_title"><a href="javascript:void(0);" id='+$questionId+'>'+$title+'</a></div><div class="question_time"><span> 发布人：'+$name+'@ '+$date+'</span></div></div>');
+			
+			
+			var $box3 = $('<div class="box-f3"><img src="img/header2.jpg" /></div>');
+			
+			$box.append($box1);
+			$box.append($box2);
+			$box.append($box3);
+			
+			$.each(v.labelList,function(j,k){
+				//标签
+				//console.log(k.content);
+				
+				var $label = $('<span class="tag" id="'+k.id+'">'+k.content+'</span>');
+				
+				$box2.children('.question_time').append($label);
+				
+			});
+			
+			//问题的内容
+			//console.log(v.question.content);
+			
+			$("#content").append($box);
+			
+			
+		});
+	}
 	
-});
+	
+	function serchload(currentPage,pageSize,$serchVal){
+		layui.use('layer', function() {
+			var layer = layui.layer;
+			
+			var iiii = layer.load();
+		 $.get("<c:url value='/question'></c:url>",{'method':'serchQuestionPage','title':$serchVal,'currentPage':currentPage,'pageSize':pageSize},function(result){
+			layer.close(iiii);
+			
+	     	createQuestion(result);
+	     	
+	 		//当是最后一页，或者页面没有数据的时候，取消滚动事件
+	 		if(currentPage == result.totalPage){
+	 			layer.msg("已经是最后一页啦",{time:1000});  //最后一页的话就不在加载数据了
+	 			$(window).off("scroll");  //取消滚动事件
+	 		}else if(result.totalPage == 0){
+	 			layer.msg("暂时还没有问题，快去提问吧！",{time:1000}); //没有数据也不在加载数据
+	 			$(window).off("scroll");  //取消滚动事件
+	 		}else{
+	 			
+	 			edit = true;   //如果不是最后一页和没有数据的话就继续加载数据
+	 		}
+	 		
+	 		
+	 		//跳转到回答页面，如果没有登录就不能直接访问回答页面
+			//console.log($('.question_title a'));
+			$('.question_title a').on('click',function(){
+				
+				
+				isLog("<c:url value='/answerquestion?method=islog&qid="+$(this).attr("id")+"&type="+questionFlag+"&cpage=1&size=5&sortType=1'></c:url>");
+				
+			});
+	 		
+	     	
+	     },'json');
+		});
+	}
 
-function serchload(currentPage,pageSize,$serchVal){
-	layui.use('layer', function() {
+	
+	//参数1：questionType表示问题的类型 '1':技术问答； '2'：面试问题； '3'：即时问答
+	//参数2：sortType表示问题排序的类型'1'：最新排序； '2'：尚未回答； '3'：热门
+	//参数3：-1表示不带标签查询，不是-1就表示带标签查询
+	function loadQuestion(questionType,sortType,labelId){
+		//一个标志位，当为true的时候，才会触发加载事件。
+		//目的：加载完最后一页数据后就不在加载数据了
+		edit=true;
+		//刚加载页面后就显示第一页的数据
+		var cpage = 1;
+		loadData(cpage, 10, questionType,sortType,labelId);
+		
+		//当页面滚动到底后加载第n页数据
+		
+		
+		$(window).off("scroll");   //先清除原来的滚动事件
+	    $(window).scroll(
+		    function () {
+		        var scrollTop = $(this).scrollTop();
+		        var scrollHeight = $(document).height();
+		        var windowHeight = $(this).height();
+		        
+		        if (scrollTop + windowHeight+20 >= scrollHeight && edit) {
+		        	edit = false;   //保证在20px的范围内，滚动事件只会触发一次
+		        	cpage++;
+		        	loadData(cpage, 10, questionType,sortType,labelId);
+		        
+		        }
+		    }
+	    );
+	}
+
+	
+	
+	
+	function loadData(currentPage, pageSize, questionType, sortType,labelId){
+		
+		layui.use('layer', function() {
 		var layer = layui.layer;
 		
 		var iiii = layer.load();
-	 $.get("<c:url value='/question'></c:url>",{'method':'serchQuestionPage','title':$serchVal,'currentPage':currentPage,'pageSize':pageSize},function(result){
-		layer.close(iiii);
 		
-     	createQuestion(result);
-     	
- 		//当是最后一页，或者页面没有数据的时候，取消滚动事件
- 		if(currentPage == result.totalPage){
- 			layer.msg("已经是最后一页啦",{time:1000});  //最后一页的话就不在加载数据了
- 			$(window).off("scroll");  //取消滚动事件
- 		}else if(result.totalPage == 0){
- 			layer.msg("暂时还没有问题，快去提问吧！",{time:1000}); //没有数据也不在加载数据
- 			$(window).off("scroll");  //取消滚动事件
- 		}else{
- 			
- 			edit = true;   //如果不是最后一页和没有数据的话就继续加载数据
- 		}
- 		
- 		<!-- 未登录点击链接会跳转到登录界面开始 -->
- 		//console.log($('.question_title a'));
- 		$('.question_title a').on('click',function(){
- 			
- 			isLog("<c:url value='/questiondetail.jsp'></c:url>");
- 			
- 		});
- 		<!-- 未登录点击链接会跳转到登录界面结束 -->
-     	
-     },'json');
-	});
-}
+		$.get("<c:url value='/question'></c:url>",{'method':'questionPage','questionType':questionType,'sortType':sortType,'labelId':labelId,'currentPage':currentPage,'pageSize':pageSize},function(result){
+			layer.close(iiii);
 
-
-
-
-//参数1：questionType表示问题的类型 '1':技术问答； '2'：面试问题； '3'：即时问答
-//参数2：sortType表示问题排序的类型'1'：最新排序； '2'：尚未回答； '3'：热门
-//参数3：-1表示不带标签查询，不是-1就表示带标签查询
-function loadQuestion(questionType,sortType,labelId){
-	//一个标志位，当为true的时候，才会触发加载事件。
-	//目的：加载完最后一页数据后就不在加载数据了
-	edit=true;
-	//刚加载页面后就显示第一页的数据
-	var cpage = 1;
-	loadData(cpage, 10, questionType,sortType,labelId);
-	
-	//当页面滚动到底后加载第n页数据
-	
-	
-	$(window).off("scroll");   //先清除原来的滚动事件
-    $(window).scroll(
-	    function () {
-	        var scrollTop = $(this).scrollTop();
-	        var scrollHeight = $(document).height();
-	        var windowHeight = $(this).height();
-	        
-	        if (scrollTop + windowHeight+20 >= scrollHeight && edit) {
-	        	edit = false;   //保证在20px的范围内，滚动事件只会触发一次
-	        	cpage++;
-	        	loadData(cpage, 10, questionType,sortType,labelId);
-	        
-	        }
-	    }
-    );
-}
-
-
-
-function loadData(currentPage, pageSize, questionType, sortType,labelId){
-	
-	layui.use('layer', function() {
-	var layer = layui.layer;
-	
-	var iiii = layer.load();
-	
-	$.get("<c:url value='/question'></c:url>",{'method':'questionPage','questionType':questionType,'sortType':sortType,'labelId':labelId,'currentPage':currentPage,'pageSize':pageSize},function(result){
-		layer.close(iiii);
-
-		//console.log(result);
-		
-		createQuestion(result);
-		
-		//当是最后一页，或者页面没有数据的时候，取消滚动事件
-		
-		if(currentPage == result.totalPage){
-			layer.msg("已经是最后一页啦",{time:1000});  //最后一页的话就不在加载数据了
-			$(window).off("scroll");  //取消滚动事件
-		}else if(result.totalPage == 0){
-			layer.msg("暂时还没有问题，快去提问吧！",{time:1000}); //没有数据也不在加载数据
-			$(window).off("scroll");  //取消滚动事件
-		}else{
+			//console.log(result);
 			
-			edit = true;   //如果不是最后一页和没有数据的话就继续加载数据
-		}
-		
-		<!-- 未登录点击链接会跳转到登录界面开始 -->
-		//console.log($('.question_title a'));
-		$('.question_title a').on('click',function(){
+			createQuestion(result);
 			
-			isLog("<c:url value='/questiondetail.jsp'></c:url>");
+			//当是最后一页，或者页面没有数据的时候，取消滚动事件
 			
-		});
-		<!-- 未登录点击链接会跳转到登录界面结束 -->
-		
-	},"json");
-	
-	});
-	
-}
-
-
-//根据json数据动态的生产问题列表
-function createQuestion(result){
-	$.each(result.pageList,function(k,v){
-		//投票数
-		var $votecount = v.question.votecount;
-		//回答数
-		var $answercount = v.question.answercount;
-		//浏览数
-		var $browsecount = v.question.browsecount;
-		//标题
-		var $title = v.question.title;
-		//发布人
-		var $name = v.user.name;
-		//发布时间
-		var $time = v.question.releasetime.time;
-		
-		var time = new Date($time);//毫秒转日期格式
-	 
-	    //调用
-	    //var $date = time.toMyDateString();
-	    var $date = time.Format("yyyy-MM-dd HH:mm:ss");
-		//console.log($date);
-		
-		//给页面添加元素
-		var $box = $('<section class="box"></section>');
-		
-		var $box1 = $('<div class="box-f1"><ul><li>'+$votecount+' <span>投票</span></li><li style="border: 1px solid #4eaa4c; color: #4eaa4c;">'+$answercount+' <span>回答</span></li><li>'+$browsecount+' <span>浏览</span></li></ul></div>');
-		
-		var $box2 = $('<div class="box-f2"><div class="question_title"><a href="javascript:void(0);">'+$title+'</a></div><div class="question_time"><span> 发布人：'+$name+'@ '+$date+'</span></div></div>');
-		
-		
-		var $box3 = $('<div class="box-f3"><img src="img/header2.jpg" /></div>');
-		
-		$box.append($box1);
-		$box.append($box2);
-		$box.append($box3);
-		
-		$.each(v.labelList,function(j,k){
-			//标签
-			//console.log(k.content);
+			if(currentPage == result.totalPage){
+				layer.msg("已经是最后一页啦",{time:1000});  //最后一页的话就不在加载数据了
+				$(window).off("scroll");  //取消滚动事件
+			}else if(result.totalPage == 0){
+				layer.msg("暂时还没有问题，快去提问吧！",{time:1000}); //没有数据也不在加载数据
+				$(window).off("scroll");  //取消滚动事件
+			}else{
+				
+				edit = true;   //如果不是最后一页和没有数据的话就继续加载数据
+			}
 			
-			var $label = $('<span class="tag" id="'+k.id+'">'+k.content+'</span>');
 			
-			$box2.children('.question_time').append($label);
+			//跳转到回答页面，如果没有登录就不能直接访问回答页面
+			//console.log($('.question_title a'));
+			$('.question_title a').on('click',function(){
+				
+				isLog("<c:url value='/answerquestion?method=islog&qid="+$(this).attr("id")+"&type="+questionFlag+"&cpage=1&size=5&sortType=1'></c:url>");
+				
+			});
 			
+			
+		},"json");
+		
 		});
 		
-		//问题的内容
-		//console.log(v.question.content);
-		
-		$("#content").append($box);
-		
-		
-	});
-}
-
-
-
-//时间转换:毫秒类型转成2017-1-2 12:20
-Date.prototype.toMyDateString = function() {
-    return this.getFullYear() + "-" + (this.getMonth() + 1) + "-" + this.getDate() + " " + this.getHours() + ":" + this.getMinutes()+ ":" +this.getSeconds();
-}
-
-	 //---------------------------------------------------
- // 日期格式化
- // 格式 YYYY/yyyy/YY/yy 表示年份
- // MM/M 月份
- // W/w 星期
- // dd/DD/d/D 日期
- // hh/HH/h/H 时间
- // mm/m 分钟
- // ss/SS/s/S 秒
- //---------------------------------------------------
- Date.prototype.Format = function(formatStr){
-	 var str = formatStr;
-	 var Week = ['日','一','二','三','四','五','六'];
-	
-	 str=str.replace(/yyyy|YYYY/,this.getFullYear());
-	 str=str.replace(/yy|YY/,(this.getYear() % 100)>9?(this.getYear() % 100).toString():'0' + (this.getYear() % 100));
-	
-	 str=str.replace(/MM/,this.getMonth()>9?this.getMonth().toString():'0' + this.getMonth());
-	 str=str.replace(/M/g,this.getMonth());
-	
-	 str=str.replace(/w|W/g,Week[this.getDay()]);
-	
-	 str=str.replace(/dd|DD/,this.getDate()>9?this.getDate().toString():'0' + this.getDate());
-	 str=str.replace(/d|D/g,this.getDate());
-	
-	 str=str.replace(/hh|HH/,this.getHours()>9?this.getHours().toString():'0' + this.getHours());
-	 str=str.replace(/h|H/g,this.getHours());
-	 str=str.replace(/mm/,this.getMinutes()>9?this.getMinutes().toString():'0' + this.getMinutes());
-	 str=str.replace(/m/g,this.getMinutes());
-	
-	 str=str.replace(/ss|SS/,this.getSeconds()>9?this.getSeconds().toString():'0' + this.getSeconds());
-	 str=str.replace(/s|S/g,this.getSeconds());
-	
-	 return str;
- }
-
-
-
-//如果没有登录就跳转到登录界面，登录了就跳转到指定的url的页面
-function isLog(url){
-	var sessionUser = "${sessionScope.user}";
-	//console.log(session==null);
-	//console.log(session==""); //未登录的时候为true
-	
-	if(sessionUser==""){  //session中没有user对象，所以去登录
-		layer.open({
-			type : 1,
-			title : '登录',
-			//skin: 'layui-layer-rim', //加上边框
-			area : [ '398px', '345px' ], //宽高:398,222;
-			//content: $('#sublayer'),//content: $('#sublayer').html()会丢失事件
-			resize : false,
-			content : $("#login"),
-			closeBtn : 1,
-			
-		});
-	}else{
-		 //session中有user对象，所以去请求回答页面
-		 
-		window.location.href=url;
 	}
-}
+	
+	
+	//时间转换:毫秒类型转成2017-1-2 12:20
+	Date.prototype.toMyDateString = function() {
+	    return this.getFullYear() + "-" + (this.getMonth() + 1) + "-" + this.getDate() + " " + this.getHours() + ":" + this.getMinutes()+ ":" +this.getSeconds();
+	}
 
+		 //---------------------------------------------------
+	 // 日期格式化
+	 // 格式 YYYY/yyyy/YY/yy 表示年份
+	 // MM/M 月份
+	 // W/w 星期
+	 // dd/DD/d/D 日期
+	 // hh/HH/h/H 时间
+	 // mm/m 分钟
+	 // ss/SS/s/S 秒
+	 //---------------------------------------------------
+	 Date.prototype.Format = function(formatStr){
+		 var str = formatStr;
+		 var Week = ['日','一','二','三','四','五','六'];
+		
+		 str=str.replace(/yyyy|YYYY/,this.getFullYear());
+		 str=str.replace(/yy|YY/,(this.getYear() % 100)>9?(this.getYear() % 100).toString():'0' + (this.getYear() % 100));
+		
+		 str=str.replace(/MM/,this.getMonth()>9?this.getMonth().toString():'0' + this.getMonth());
+		 str=str.replace(/M/g,this.getMonth());
+		
+		 str=str.replace(/w|W/g,Week[this.getDay()]);
+		
+		 str=str.replace(/dd|DD/,this.getDate()>9?this.getDate().toString():'0' + this.getDate());
+		 str=str.replace(/d|D/g,this.getDate());
+		
+		 str=str.replace(/hh|HH/,this.getHours()>9?this.getHours().toString():'0' + this.getHours());
+		 str=str.replace(/h|H/g,this.getHours());
+		 str=str.replace(/mm/,this.getMinutes()>9?this.getMinutes().toString():'0' + this.getMinutes());
+		 str=str.replace(/m/g,this.getMinutes());
+		
+		 str=str.replace(/ss|SS/,this.getSeconds()>9?this.getSeconds().toString():'0' + this.getSeconds());
+		 str=str.replace(/s|S/g,this.getSeconds());
+		
+		 return str;
+	 }
 
+	
+	//如果没有登录就跳转到登录界面，登录了就跳转到指定的url的页面
+	 function isLog(url){
+	 	var sessionUser = "${sessionScope.user}";
+	 	//console.log(session==null);
+	 	//console.log(session==""); //未登录的时候为true
+	 	
+	 	if(sessionUser==""){  //session中没有user对象，所以去登录
+	 		layer.open({
+	 			type : 1,
+	 			title : '登录',
+	 			//skin: 'layui-layer-rim', //加上边框
+	 			area : [ '398px', '345px' ], //宽高:398,222;
+	 			//content: $('#sublayer'),//content: $('#sublayer').html()会丢失事件
+	 			resize : false,
+	 			content : $("#login"),
+	 			closeBtn : 1,
+	 			
+	 		});
+	 	}else{
+	 		 //session中有user对象，所以去请求回答页面
+	 		 
+	 		window.location.href=url;
+	 	}
+	 }
 
+	 //首页和我要提问 开始
 
-
-</script>
-
-
-<!-- 显示问题页面结束 -->
-
-
-
-
-
-
-<!-- 首页和我要提问 开始-->
-<script type="text/javascript">
-$(function(){
-	layui.use('layer', function() {
+	
+	 layui.use('layer', function() {
 		var layer = layui.layer;
 		//显示首页
 		$("#navigation li a").on('click',function(){
@@ -862,12 +847,32 @@ $(function(){
 		
 		
 	});
+
+	 //首页和我要提问 结束
+	
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
 	
 });
 
+
 </script>
 
-<!-- 首页和我要提问 结束-->
+
+<!-- 显示问题页面结束 -->
+
+
+
+
+
+
+
 
 
 
