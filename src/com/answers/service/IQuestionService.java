@@ -21,4 +21,11 @@ public interface IQuestionService {
 
 	//根据问题id获取问题的内容和用户
 	public QU queryQuestionByQuestionID(int questionId, String type);
+	
+	//浏览数加1
+	public int addBrowsecountService(int questionId, String type, int num);
+	
+	//修改投票数
+	public int addVotecountService(int answerId, String type, int num);
+	
 }

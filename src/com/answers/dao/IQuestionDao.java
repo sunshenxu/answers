@@ -45,4 +45,11 @@ public interface IQuestionDao {
 	//修改问题的回答数
 	public int updateAnswercountDao(String sql,int num,int questionId);
 	
+	
+	//修改问题的浏览数
+	public int addBrowsecountDao(String sql, int num,int id);
+	
+	//修改投票数
+	public int addVotecountDao(String sql, int num,int answerId);
+	
 }

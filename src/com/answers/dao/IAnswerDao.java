@@ -15,4 +15,10 @@ public interface IAnswerDao {
 	//插入一条回答数据
 	public int addHuidaDao(Huida huida,String sql);
 	
+	
+	
+	//修改投票数
+	public int addVotecountDao(String sql, int num,int answerId);
+	
+	
 }

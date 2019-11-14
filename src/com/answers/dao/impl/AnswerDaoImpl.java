@@ -4,16 +4,20 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.ArrayHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
 
 import com.answers.dao.IAnswerDao;
 import com.answers.entity.Huida;
+import com.answers.utils.DbcpUtil;
 import com.answers.utils.TransactionUtil;
 
 public class AnswerDaoImpl implements IAnswerDao {
-
+	private DataSource dataSource = DbcpUtil.getBasicDataSourceByProperties();
+	
 	//根据问题id查询对应的回答列表
 	@Override
 	public List<Huida> queryHuidaByQuestionIdDao(int currentPage, int pageSize, int questionId, String sql) {
@@ -62,6 +66,24 @@ public class AnswerDaoImpl implements IAnswerDao {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		
+		return 0;
+	}
+
+	
+
+	//投票数加指定的数
+	@Override
+	public int addVotecountDao(String sql, int num, int answerId) {
+		QueryRunner runner = new QueryRunner(dataSource);
+		try {
+			int count = runner.update(sql, num, answerId);
+			
+			return count;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
 		
 		return 0;
 	}

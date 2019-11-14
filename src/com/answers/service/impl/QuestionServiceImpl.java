@@ -231,5 +231,39 @@ public class QuestionServiceImpl implements IQuestionService{
 		
 		return null;
 	}
+	
+	//浏览数加1
+	@Override
+	public int addBrowsecountService(int questionId,String type, int num) {
+		String sql = "";
+		if("1".equals(type)) {
+			sql = "update technical set browsecount=browsecount+? where id=? ";
+		}else if("2".equals(type)) {
+			sql = "update interview set browsecount=browsecount+? where id=? ";
+		}else if("3".equals(type)) {
+			sql = "update task set browsecount=browsecount+? where id=? ";
+		}
+		int count = questionDao.addBrowsecountDao(sql, num, questionId);
+		
+		return count;
+	}
+	
+	
+	//修改投票数
+	@Override
+	public int addVotecountService(int answerId, String type, int num) {
+		String sql = "";
+		if("1".equals(type)) {
+			sql = "update technical set votecount=votecount+? where id=? ";
+		}else if("2".equals(type)) {
+			sql = "update interview set votecount=votecount+? where id=? ";
+		}else if("3".equals(type)) {
+			sql = "update task set votecount=votecount+? where id=? ";
+		}
+		int count = questionDao.addVotecountDao(sql, num, answerId);
+		
+		return count;
+	}
+	
 
 }

@@ -12,4 +12,7 @@ public interface IAnswerService {
 	//添加一个问题回答，type表示问题的类型
 	public int addQuestionAnswerService(Huida huida,String type);
 	
+	
+	//修改投票数
+	public int addVotecountService(int answerId, String type, int num);
 }

@@ -19,17 +19,9 @@
 		<link rel="stylesheet" href="css/ask.css" />
 		<link rel="stylesheet" href="css/loginregister.css" />
 		<link rel="stylesheet" href="css/common.css" />
-		<script>
-			$(function() {
-				$("#menu a").each(function(index, ele) {
-					$(ele).bind("mouseover", function() {
-						$("#menu a[class='menu-item']").removeClass(); //已经有menu-item的移除
-						$(ele).toggleClass("menu-item");
-					});
-				});
-               
-			});
-		</script>
+	
+	
+	
 		<style type="text/css">
 			#content{
 				position:relative;
@@ -85,6 +77,7 @@
 			</div>
 		</section>
 		
+		
 		<section id="main">
 			<div id="content">
 				<div class="toptitle">
@@ -129,6 +122,10 @@
 								<label for="rdo4">即时问答</label>
 							</span> -->
 							
+						
+						
+						
+						
 						
 							
 				<div class="layui-form ">
@@ -397,9 +394,18 @@ $(function(){
 });
 
 
+
 </script>
 
+<script>
+//Demo
+layui.use('form', function(){
 
+	
+  
+  
+});
+</script>
 
 
 

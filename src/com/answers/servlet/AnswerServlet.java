@@ -49,6 +49,12 @@ public class AnswerServlet extends BaseServlet{
 			
 		}else{  
 			//有用户登录
+			
+			//浏览数加1
+			
+			int count = questionService.addBrowsecountService(Integer.parseInt(qid), sortType, 1);
+			
+			//显示问题的内容和回答的内容
 			QU qu = questionService.queryQuestionByQuestionID(Integer.parseInt(qid), type);
 			
 			Page<AUs> pageAnswer = answerService.queryCurrentPage(Integer.parseInt(currentPage), Integer.parseInt(pageSize), type, Integer.parseInt(qid),sortType);
@@ -65,6 +71,7 @@ public class AnswerServlet extends BaseServlet{
 		
 	}
 	
+	//添加一个回答
 	public String putAnswer(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		String type = request.getParameter("type");
 		
@@ -95,6 +102,27 @@ public class AnswerServlet extends BaseServlet{
 		
 		return "";
 		
+	}
+	
+	
+	//点赞
+	public String vote(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		
+		String type = request.getParameter("type");
+		int num = Integer.parseInt(request.getParameter("num"));
+		int answerId = Integer.parseInt(request.getParameter("answerId"));
+		
+		int count = answerService.addVotecountService(answerId, type, num);
+		
+		JSONObject json = new JSONObject();
+		if(count == 1) {
+			json.put("voteflag", "true");
+		}else {
+			json.put("voteflag", "false");
+		}
+		response.getWriter().print(json);
+		
+		return "";
 	}
 	
 	

@@ -446,6 +446,39 @@ public class QuestionDaoImpl implements IQuestionDao{
 		return 0;
 	}
 	
+	//浏览数加指定的值
+	@Override
+	public int addBrowsecountDao(String sql, int num, int id) {
+		
+		QueryRunner runner = new QueryRunner(dataSource);
+		try {
+			int count = runner.update(sql, num, id);
+			
+			return count;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return 0;
+	}
+
+
+	//投票数加指定的数
+	@Override
+	public int addVotecountDao(String sql, int num, int answerId) {
+		QueryRunner runner = new QueryRunner(dataSource);
+		try {
+			int count = runner.update(sql, num, answerId);
+			
+			return count;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		
+		return 0;
+	}
+	
 	
 	
 

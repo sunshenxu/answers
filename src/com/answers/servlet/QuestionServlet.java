@@ -78,4 +78,24 @@ public class QuestionServlet extends BaseServlet{
 	}
 	
 	
+	//点赞
+	public String vote(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		String type = request.getParameter("type");
+		int num = Integer.parseInt(request.getParameter("num"));
+		int qid = Integer.parseInt(request.getParameter("qid"));
+		
+		int count = questionService.addVotecountService(qid, type, num);
+		
+		JSONObject json = new JSONObject();
+		if(count == 1) {
+			json.put("voteflag", "true");
+		}else {
+			json.put("voteflag", "false");
+		}
+		response.getWriter().print(json);
+		
+		return "";
+	}
+	
+	
 }

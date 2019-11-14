@@ -56,6 +56,7 @@ public class AnswerServiceImpl implements IAnswerService {
 				sql1 = "select count(1) from taskalanswer where taskid = ?";
 			}
 			
+			
 			List<Huida> huidaList = answerDao.queryHuidaByQuestionIdDao(currentPage, pageSize, questionId, sql);
 			
 			List<AUs> ausList = new ArrayList<AUs>();
@@ -108,10 +109,10 @@ public class AnswerServiceImpl implements IAnswerService {
 				sql = "insert into technicalanswer(content,answertime,votecount,userid,technicalid) values(?,?,?,?,?)";
 				sql1 = "update technical set answercount = answercount+? where id=?";
 			}else if("2".equals(type)) {
-				sql = "insert into interviewalanswer(content,answertime,votecount,userid,technicalid) values(?,?,?,?,?)";
+				sql = "insert into interviewalanswer(content,answertime,votecount,userid,interviewid) values(?,?,?,?,?)";
 				sql1 = "update interview set answercount = answercount+? where id=?";
 			}else if("3".equals(type)) {
-				sql = "insert into taskalanswer(content,answertime,votecount,userid,technicalid) values(?,?,?,?,?)";
+				sql = "insert into taskalanswer(content,answertime,votecount,userid,taskid) values(?,?,?,?,?)";
 				sql1 = "update task set answercount = answercount+? where id=?";
 			}
 			
@@ -133,12 +134,30 @@ public class AnswerServiceImpl implements IAnswerService {
 		}
 		
 		
-		
-		
-		
-		
 		return 0;
 	}
+
+	
+	
+
+	//修改投票数
+	@Override
+	public int addVotecountService(int answerId, String type, int num) {
+		String sql = "";
+		if("1".equals(type)) {
+			sql = "update technicalanswer set votecount=votecount+? where id=? ";
+		}else if("2".equals(type)) {
+			sql = "update interviewalanswer set votecount=votecount+? where id=? ";
+		}else if("3".equals(type)) {
+			sql = "update taskalanswer set votecount=votecount+? where id=? ";
+		}
+		int count = answerDao.addVotecountDao(sql, num, answerId);
+		
+		return count;
+	}
+	
+	
+	
 	
 	
 }

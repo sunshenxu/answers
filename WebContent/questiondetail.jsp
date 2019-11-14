@@ -12,9 +12,12 @@
 		<link rel="stylesheet" href="layui/css/layui.css" media="all">
 		<script type="text/javascript" src="js/jquery-3.3.1.js"></script>
 		
+		
 		<script type="text/javascript" src="ckeditor/ckeditor.js"></script>
-		<script src="highlight/highlight.pack.js"></script>
 		<link rel="stylesheet" href="highlight/styles/default.css">
+		<script src="highlight/highlight.pack.js"></script>
+		
+		
 		<link rel="stylesheet" href="css/daydayup.css" />
 		<link rel="stylesheet" href="css/loginregister.css" />
 		<link rel="stylesheet" href="css/questiondetail.css" />
@@ -27,6 +30,7 @@
 						$(ele).toggleClass("menu-item");
 					});
 				});
+				
 			});
 		</script>
 		
@@ -42,6 +46,24 @@
 				right: 0px;
 				top: -10px;
 			}
+			
+			.userdetail {
+			    height: 60px;
+			    margin-top: 20px;
+			    text-align: right;
+			    margin-left: 596px;
+			    display: block;
+			}
+			.answer-content-detail{
+				display: block;
+			}
+			#editor{
+			display: block;
+			}
+			.answer_detail {
+				margin-bottom: 130px;
+			}
+			
 		</style>
 	</head>
 
@@ -154,20 +176,21 @@
 							
 								<!-- 回答内容 -->
 								
+								
 								<c:forEach items="${sessionScope.pageAnswer.pageList }" var="answer">
 									
 								<article class="answer_detail">
 									<div class="vote_collect_wrapper">
 										<div class="vote_collect">
-											<a class="vote_up" title="顶">
+											<a class="vote_up" title="顶" answerid="${answer.huida.id }">
 											</a>
 											<span id="answerVoteCount" class="vote_count"><c:out value="${answer.huida.votecount }"></c:out></span>
-											<a class="vote_down"  title="踩">
+											<a class="vote_down"  title="踩" answerid="${answer.huida.id }">
 											</a>
 										</div>
 									</div>
 									
-									<div class="answer-content-detail">
+									<div class="answer-content-detail" style="width:800px">
 										<section>
 											<c:out value="${answer.huida.content }" escapeXml="false"></c:out>
 										</section>
@@ -181,6 +204,7 @@
 										<div>
 											<img src="img/header2.jpg" />
 										</div>
+										
 									</div>
 								</article>
 								
@@ -190,6 +214,7 @@
 								<textarea id="editor"></textarea>
 								<script type="text/javascript">
 									CKEDITOR.replace("editor");
+									
 								</script>
 								
 								<div class="answersub">
@@ -309,7 +334,23 @@ $(function(){
 	
 	//回答问题
 	$("#answersubbtn").on('click',function(){
-		var huidaContent = CKEDITOR.instances.editor.getData();
+		//var huidaContent = CKEDITOR.instances.editor.getData();
+		//console.log(huidaContent);
+		
+		var  $huida = $("#cke_1_contents iframe").contents().find("pre");
+		//console.log($huida.prop("outerHTML"));  //获取当前节点的html包含当前节点的方法
+		
+		console.log($huida.prop("outerHTML"));
+		if($huida.prop("outerHTML")==null){
+			var huidaContent = CKEDITOR.instances.editor.getData();
+		}else{
+			var huidaContent = $huida.prop("outerHTML");
+		}
+		
+		
+		//var conten = window.frames[0];
+	
+		
 		
 		var uid = ${sessionScope.user.userId};
 		
@@ -359,6 +400,76 @@ $(function(){
 		$(".answer_order a:eq(1)").addClass("selected");
 		$(".answer_order a:eq(0)").removeClass("selected");
 	}
+	
+	
+	//回答点赞
+	$(".answer_list .vote_up").on("click",function(){
+		var type = ${requestScope.type };
+		var answerId = $(this).attr("answerid");
+		var spanNode = $(this).parent().children("span");
+		$.get("<c:url value='/answerquestion'></c:url>",{'method':'vote','num':1,'type':type,'answerId':answerId},function(result){
+			if(result.voteflag == "true"){
+				
+				spanNode.html(parseInt(spanNode.html())+1);
+				
+			}
+			
+			
+		},'json');
+		
+	});
+	
+	$(".answer_list .vote_down").on("click",function(){
+		var type = ${requestScope.type };
+		var answerId = $(this).attr("answerid");
+		var spanNode = $(this).parent().children("span");
+		$.get("<c:url value='/answerquestion'></c:url>",{'method':'vote','num':-1,'type':type,'answerId':answerId},function(result){
+			if(result.voteflag == "true"){
+				
+				spanNode.html(parseInt(spanNode.html())-1);
+				
+			}
+			
+			
+		},'json');
+		
+	});
+	
+	
+	//问题点赞
+	
+	$(".questioncontainer .vote_up").on("click",function(){
+		var type = ${requestScope.type };
+		var spanNode = $("#questionVoteCount");
+		var qid = ${sessionScope.qu.question.id};
+		$.get("<c:url value='/question'></c:url>",{'method':'vote','num':1,'type':type,'qid':qid},function(result){
+			if(result.voteflag == "true"){
+				
+				spanNode.html(parseInt(spanNode.html())+1);
+				
+			}
+			
+			
+		},'json');
+		
+	});
+	
+	$(".questioncontainer .vote_down").on("click",function(){
+		var type = ${requestScope.type };
+		var spanNode = $("#questionVoteCount");
+		var qid = ${sessionScope.qu.question.id};
+		$.get("<c:url value='/question'></c:url>",{'method':'vote','num':-1,'type':type,'qid':qid},function(result){
+			if(result.voteflag == "true"){
+				
+				spanNode.html(parseInt(spanNode.html())-1);
+				
+			}
+			
+			
+		},'json');
+		
+	});
+	
 	
 	
 	
