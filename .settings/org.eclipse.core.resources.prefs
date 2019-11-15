@@ -1,4 +1,9 @@
 eclipse.preferences.version=1
+encoding//WebContent/back/login.jsp=UTF-8
+encoding//WebContent/back/main.jsp=UTF-8
+encoding//WebContent/back/role.jsp=UTF-8
+encoding//WebContent/back/roleedit.jsp=UTF-8
+encoding//WebContent/back/tag.jsp=UTF-8
 encoding//WebContent/index.jsp=UTF-8
 encoding//WebContent/questiondetail.jsp=UTF-8
 encoding//src/com/answers/servlet/BaseServlet.java=UTF-8

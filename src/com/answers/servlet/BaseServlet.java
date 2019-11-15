@@ -14,7 +14,10 @@ public class BaseServlet extends HttpServlet {
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		response.setContentType("text/html;charset=utf-8");
+		
 		String methodName = request.getParameter("method");
+		
 		//当请求有method参数的时候执行对应的方法，如果没有就默认有一个参数method=query
 		if (methodName == null || methodName.trim().isEmpty()) {
 			//response.sendRedirect(request.getRequestURL() + "?method=queryAll");

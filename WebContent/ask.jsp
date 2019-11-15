@@ -397,8 +397,11 @@ $(function(){
 
 </script>
 
+
+
 <script>
-//Demo
+
+//不能删除，否则无法无法加载选择框
 layui.use('form', function(){
 
 	

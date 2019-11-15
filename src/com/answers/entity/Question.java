@@ -15,6 +15,8 @@ public class Question implements Serializable{
 	private int answercount;
 	private int browsecount;
 	private String userid;
+	private String status;
+	private Date altertime;
 	
 	
 	public Question() {
@@ -23,6 +25,34 @@ public class Question implements Serializable{
 	
 	
 	
+	public String getStatus() {
+		return status;
+	}
+
+
+
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+
+
+
+	public Date getAltertime() {
+		return altertime;
+	}
+
+
+
+
+	public void setAltertime(Date altertime) {
+		this.altertime = altertime;
+	}
+
+
+
+
 	public String getContent() {
 		return content;
 	}

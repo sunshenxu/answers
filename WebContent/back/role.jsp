@@ -1,11 +1,17 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
   <head>
 	<meta charset="utf-8">
     <title>My JSP 'test.jsp' starting page</title>
-	<link rel="stylesheet" href="/GoodStudy/css/goodstudy.css">
-	<script type="text/javascript" src="../js/jquery.js"></script>
-	<script type="text/javascript" src="../js/layer.js"></script>
+	<link rel="stylesheet" href="../css/goodstudy.css">
+	
+	<script type="text/javascript" src="../layui/layui.js"></script>
+	<link rel="stylesheet" href="../layui/css/layui.css" media="all">
+	<script type="text/javascript" src="../js/jquery-3.3.1.js"></script>
+	
+	
 	<script>
 		$().ready(
 			function(){
@@ -67,6 +73,17 @@
 			
 		</div>
 	</div>
+	
+	
+	<script type="text/javascript">
+	layui.use('layer', function() {
+		var layer = layui.layer;
+		
+		
+		
+	});
+	
+	</script>
   </body>
 </html>
 

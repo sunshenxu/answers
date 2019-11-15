@@ -164,12 +164,11 @@
 					//skin: 'layui-layer-rim', //加上边框
 					area : [ '398px', '345px' ], //宽高:398,282;
 					//content: $('#sublayer'),//content: $('#sublayer').html()会丢失事件
-					//resize : false,
+					resize : false,   //不能改变大小
 					content : $("#register"),
 					closeBtn : 1,
 				});
 			});
-			
 			
 		});
 		

@@ -16,7 +16,10 @@ public class EncodingRequest extends HttpServletRequestWrapper {
 	public String getParameter(String name) {
 		String val = req.getParameter(name);
 		try {
-			val = new String(val.getBytes("iso-8859-1"),"utf-8");
+			if(val!=null) {
+				val = new String(val.getBytes("iso-8859-1"),"utf-8");
+			}
+			
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
